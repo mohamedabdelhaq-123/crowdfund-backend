@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -21,6 +21,28 @@ jobs:
             set -e
             cd "${{ secrets.EC2_PROJECT_PATH }}"
 
-            git -C crowdfund-backend pull --ff-only origin main
+            # Serialize deploys across backend/frontend workflows on the same host.
+            lock_file="/tmp/crowdfund-deploy.lock"
+            if command -v flock >/dev/null 2>&1; then
+              exec 9>"${lock_file}"
+              flock -x 9
+            fi
 
-            docker compose up -d --build backend
+            git -C crowdfund-backend fetch origin dev
+            git -C crowdfund-backend reset --hard origin/dev
+
+            compose() {
+              if docker compose version >/dev/null 2>&1; then
+                docker compose "$@"
+              elif command -v docker-compose >/dev/null 2>&1; then
+                docker-compose "$@"
+              else
+                echo "Docker Compose is not installed on EC2"
+                exit 1
+              fi
+            }
+
+            compose -p crowdfund up -d --build --no-deps backend
+
+            # Remove dangling images (<none>) created by rebuilds.
+            docker image prune -f
