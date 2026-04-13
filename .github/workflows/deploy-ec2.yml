@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - feature/adding-CI-CD
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -28,8 +28,8 @@ jobs:
               flock -x 9
             fi
 
-            git -C crowdfund-backend fetch origin feature/adding-CI-CD
-            git -C crowdfund-backend reset --hard origin/feature/adding-CI-CD
+            git -C crowdfund-backend fetch origin dev
+            git -C crowdfund-backend reset --hard origin/dev
 
             compose() {
               if docker compose version >/dev/null 2>&1; then
