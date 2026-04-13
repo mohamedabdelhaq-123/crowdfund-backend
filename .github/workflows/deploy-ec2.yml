@@ -43,3 +43,6 @@ jobs:
             }
 
             compose -p crowdfund up -d --build --no-deps backend
+
+            # Remove dangling images (<none>) created by rebuilds.
+            docker image prune -f
