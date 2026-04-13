@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -21,6 +21,13 @@ jobs:
             set -e
             cd "${{ secrets.EC2_PROJECT_PATH }}"
 
-            git -C crowdfund-backend pull --ff-only origin main
+            git -C crowdfund-backend pull --ff-only origin dev
 
-            docker compose up -d --build backend
+            if docker compose version >/dev/null 2>&1; then
+              docker compose up -d --build backend
+            elif command -v docker-compose >/dev/null 2>&1; then
+              docker-compose up -d --build backend
+            else
+              echo "Docker Compose is not installed on EC2"
+              exit 1
+            fi
