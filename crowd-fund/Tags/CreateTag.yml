@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/tags/"
+  url: "{{baseUrl}}/tags"
   body:
     type: json
     data: |-

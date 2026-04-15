@@ -35,7 +35,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='',cast=Csv())
 # Application definition
 
 INSTALLED_APPS = [ # local apps , then 3rd party, then django default
-    'apps.tag',
+  
     'apps.authentication', 
     'apps.projects',
     'apps.core',
@@ -44,7 +44,7 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     'rest_framework', 
     'rest_framework_simplejwt', # tool handle jwt
     'rest_framework_simplejwt.token_blacklist', # handle logouts by remembring invalidated tokens has its own db tables
-
+    'django_extensions', 
     'django.contrib.admin', # can be removed
     'django.contrib.auth',
     'django.contrib.contenttypes',

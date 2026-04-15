@@ -1,4 +1,4 @@
 name: crowd-fund
 variables:
   - name: baseUrl
-    value: http://localhost:8000
+    value: http://localhost:8000/api

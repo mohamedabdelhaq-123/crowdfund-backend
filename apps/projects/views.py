@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Category, Project
-from .serializers import CategorySerializer, ProjectCardSerializer
+from .models import Category, Project, Tag
+from .serializers import CategorySerializer, ProjectSerializer, TagSerializer
 from rest_framework import generics, filters
 
 
@@ -10,6 +10,13 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+class TagViewSet(viewsets.ModelViewSet):
+  queryset = Tag.objects.all()
+  serializer_class = TagSerializer
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset=Project.objects.all()
+    serializer_class = ProjectSerializer
 
 class HomepageView(APIView):
     def get(self, request):
@@ -23,9 +30,9 @@ class HomepageView(APIView):
 
         return Response(
             {
-                "latest": ProjectCardSerializer(latest_projects, many=True).data,
-                "featured": ProjectCardSerializer(featured_projects, many=True).data,
-                "top_rated": ProjectCardSerializer(top_rated_projects, many=True).data,
+                "latest": ProjectSerializer(latest_projects, many=True).data,
+                "featured": ProjectSerializer(featured_projects, many=True).data,
+                "top_rated": ProjectSerializer(top_rated_projects, many=True).data,
                 "categories": CategorySerializer(categories, many=True).data,
             }
         )
@@ -33,13 +40,13 @@ class HomepageView(APIView):
 
 class ProjectSearchView(generics.ListAPIView):
     queryset = Project.objects.filter(status="pending")
-    serializer_class = ProjectCardSerializer
+    serializer_class = ProjectSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ["title", "details", "category__name", "tags__name"]
 
 
 class SimilarProjectsView(generics.ListAPIView):
-    serializer_class = ProjectCardSerializer
+    serializer_class = ProjectSerializer
 
     def get_queryset(self):
         project_id = self.kwargs.get("pk")

@@ -1,0 +1,31 @@
+info:
+  name: Create Project
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/projects/"
+  body:
+    type: json
+    data: |-
+      {
+        "title": "Solar Community Garden",
+        "start_date": "2026-05-01",
+        "end_date": "2026-12-31",
+        "details": "A project aimed at installing solar panels in urban community spaces.",
+        "target": 50000.0,
+        "current_money": 12500.5,
+        "is_featured": true,
+        "status": "pending",
+        "category": 3,
+        "user": 14,
+        "created_at": "2026-04-15T09:35:47Z"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
