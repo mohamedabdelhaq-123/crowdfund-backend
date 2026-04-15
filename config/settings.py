@@ -149,3 +149,44 @@ AUTH_USER_MODEL = 'authentication.User'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='sandbox.smtp.mailtrap.io')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # 587 is the standard SMTP port for TLS (STARTTLS)
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = 'Crowdfund <noreply@crowdfund.io>'
+
+# Frontend URL — used to build activation links sent in emails
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',      # reads JWT from cookies
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',      # reject unauthenticated by default
+    ),
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),      # short-lived so stolen tokens expire fast
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,      # issue new refresh token on each use
+    'BLACKLIST_AFTER_ROTATION': True,      # old refresh tokens auto-blacklisted
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+    'AUTH_COOKIE': 'access',      # cookie name for access token
+    'AUTH_COOKIE_REFRESH': 'refresh',      # cookie name for refresh token
+    'AUTH_COOKIE_DOMAIN': None,
+    'AUTH_COOKIE_SECURE': False,      # True in production (HTTPS only)
+    'AUTH_COOKIE_HTTP_ONLY': True,      # JS cannot read these cookies
+    'AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE_SAMESITE': 'Lax',
+}
+
