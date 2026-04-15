@@ -1,9 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Category, Project, Tag
-from .serializers import CategorySerializer, ProjectSerializer, TagSerializer
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from django.shortcuts import get_object_or_404
+from django.db.models import Avg
+
+from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag
+from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -27,7 +31,11 @@ class HomepageView(APIView):
 
         featured_projects = Project.objects.filter(is_featured=True)[:5]
 
-        top_rated_projects = Project.objects.order_by("-avg_rate")[:5]
+        top_rated_projects = (
+            Project.objects.annotate(avg_rating=Avg("ratings__stars"))
+            .filter(avg_rating__isnull=False)
+            .order_by("-avg_rating", "-created_at")[:5]
+        )
 
         categories = Category.objects.all()
 
@@ -64,3 +72,85 @@ class SimilarProjectsView(generics.ListAPIView):
             )
         except Project.DoesNotExist:
             return Project.objects.none()
+
+
+
+class ProjectCommentCollectionView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, project_id):
+        get_object_or_404(Project, id=project_id)
+        comments = Comment.objects.filter(project_id=project_id).order_by("-created_at")
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, project_id):
+        get_object_or_404(Project, id=project_id)
+        serializer = CommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, project_id=project_id)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProjectCommentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk, user=request.user)
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk, user=request.user)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CommentReportCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+        report = CommentReport.objects.filter(comment=comment, user=request.user).first()
+        if report:
+            report.delete()
+            return Response({"detail": "comment unflagged"}, status=status.HTTP_200_OK)
+
+        CommentReport.objects.create(comment=comment, user=request.user)
+        return Response({"detail": "comment flagged as inappropriate"}, status=status.HTTP_201_CREATED)
+
+
+class ProjectReportCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        report = ProjectReport.objects.filter(project=project, user=request.user).first()
+        if report:
+            report.delete()
+            return Response({"detail": "project unflagged"}, status=status.HTTP_200_OK)
+
+        ProjectReport.objects.create(project=project, user=request.user)
+        return Response({"detail": "project flagged as inappropriate"}, status=status.HTTP_201_CREATED)
+
+
+class ProjectRatingCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        rating = ProjectRating.objects.filter(project=project, user=request.user).first()
+
+        if rating:
+            serializer = ProjectRatingSerializer(rating, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        serializer = ProjectRatingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(project=project, user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

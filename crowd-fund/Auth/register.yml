@@ -1,0 +1,26 @@
+info:
+  name: register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register/"
+  body:
+    type: json
+    data: |-
+      {
+          "first_name": "Ahmed",
+          "last_name": "Mohamed",
+          "email": "ahmed@test.com",
+          "password": "SecurePass123",
+          "confirm_password": "SecurePass123",
+          "mobile_number": "01020345678"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

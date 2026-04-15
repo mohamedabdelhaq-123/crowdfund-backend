@@ -1,10 +1,13 @@
 from rest_framework import serializers
 from .models import User
+from django.contrib.auth import authenticate
+from django.utils import timezone
 
+# Request → Serializer(data) → is_valid() triggers: field validators → validate() → model validators → save() triggers create() → Response
 
 class RegisterSerializer(serializers.ModelSerializer):     # validates registration input
 
-    confirm_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True, required=True) #explicity field that will exist in the json
 
     class Meta:
         model = User
@@ -29,15 +32,21 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
         }
 
     def validate(self, attrs):         # ensure password and confirm_password match
-        if attrs['password'] != attrs['confirm_password']:
+        if attrs['password'] != attrs['confirm_password']: 
             raise serializers.ValidationError(
                 {'confirm_password': 'Passwords do not match.'}
             )
         return attrs
+     
+    def create(self, validated_data):    # remove confirm_password and use create_user() to hash the password
+        validated_data.pop('confirm_password') #after validation remove the confirm field
+        return User.objects.create_user(**validated_data) #create user by the key values
+    
 
-    def create(self, validated_data):            # remove confirm_password and use create_user() to hash the password
-        validated_data.pop('confirm_password')
-        return User.objects.create_user(**validated_data)
+    def validate_birthdate(self, value):
+        if value and value > timezone.now().date():
+            raise serializers.ValidationError("Birthdate cannot be in the future.")
+        return value
 
 
 class LoginSerializer(serializers.Serializer):      # validates login credentials and activation status
@@ -45,7 +54,6 @@ class LoginSerializer(serializers.Serializer):      # validates login credential
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):      # check credentials first, then activation status
-        from django.contrib.auth import authenticate
 
         user = authenticate(email=attrs['email'], password=attrs['password'])
 

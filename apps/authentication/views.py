@@ -9,6 +9,8 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from django.core.signing import TimestampSigner
+from urllib.parse import unquote
 
 from .serializers import RegisterSerializer, LoginSerializer
 from .utils import send_activation_email
@@ -17,6 +19,7 @@ from .models import User
 
 class RegisterView(APIView):      # POST /auth/register/ — validates input, creates user, sends activation email
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -35,10 +38,15 @@ class RegisterView(APIView):      # POST /auth/register/ — validates input, cr
 
 class ActivateAccountView(APIView):      # GET /auth/activate/<token>/ — verifies signed token and activates the user
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def get(self, request, token):
+
+        signer = TimestampSigner(salt='activation')
+        token = unquote(token)
+
         try:
-            user_pk = signing.loads(token, max_age=86400)      # max_age is 24 hours
+            user_pk = signer.unsign(token, max_age=86400)      # return the id and check the max_age is 24 hours
         except signing.SignatureExpired:
             return Response(
                 {'error': 'Activation link has expired. Please request a new one.'},
@@ -108,7 +116,9 @@ class LoginView(APIView):      # POST /auth/login/ — validates credentials and
 
 
 class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh token and clears cookies
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
@@ -130,6 +140,8 @@ class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh toke
 
 class ResendActivationView(APIView):      # POST /auth/resend-activation/ — sends new activation email with cooldown
     permission_classes = [AllowAny]
+    authentication_classes = []
+
 
     def post(self, request):
         email = request.data.get('email')
