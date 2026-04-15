@@ -59,3 +59,14 @@ class CommentReport(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["comment", "user"], name="unique_comment_report_per_user"),
         ]
+
+
+class ProjectReport(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["project", "user"], name="unique_project_report_per_user"),
+        ]

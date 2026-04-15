@@ -5,7 +5,7 @@ from rest_framework import generics, filters, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 
-from .models import Category, Comment, CommentReport, Project, Tag
+from .models import Category, Comment, CommentReport, Project, ProjectReport, Tag
 from .serializers import CategorySerializer, CommentSerializer, ProjectSerializer, TagSerializer
 
 
@@ -113,3 +113,17 @@ class CommentReportCreateView(APIView):
 
         CommentReport.objects.create(comment=comment, user=request.user)
         return Response({"detail": "comment flagged as inappropriate"}, status=status.HTTP_201_CREATED)
+
+
+class ProjectReportCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        report = ProjectReport.objects.filter(project=project, user=request.user).first()
+        if report:
+            report.delete()
+            return Response({"detail": "project unflagged"}, status=status.HTTP_200_OK)
+
+        ProjectReport.objects.create(project=project, user=request.user)
+        return Response({"detail": "project flagged as inappropriate"}, status=status.HTTP_201_CREATED)
