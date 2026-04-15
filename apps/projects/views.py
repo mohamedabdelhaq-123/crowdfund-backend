@@ -1,9 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Category, Project, Tag
-from .serializers import CategorySerializer, ProjectSerializer, TagSerializer
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from django.shortcuts import get_object_or_404
+
+from .models import Category, Comment, Project, Tag
+from .serializers import CategorySerializer, CommentSerializer, ProjectSerializer, TagSerializer
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -61,3 +64,38 @@ class SimilarProjectsView(generics.ListAPIView):
             )
         except Project.DoesNotExist:
             return Project.objects.none()
+
+
+
+class ProjectCommentCollectionView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, project_id):
+        get_object_or_404(Project, id=project_id)
+        comments = Comment.objects.filter(project_id=project_id).order_by("-created_at")
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, project_id):
+        get_object_or_404(Project, id=project_id)
+        serializer = CommentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=request.user, project_id=project_id)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProjectCommentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk, user=request.user)
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk, user=request.user)
+        comment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,6 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, HomepageView, ProjectSearchView, SimilarProjectsView, TagViewSet,ProjectViewSet
+from .views import (
+    CategoryViewSet,
+    HomepageView,
+    ProjectCommentCollectionView,
+    ProjectCommentDetailView,
+    ProjectSearchView,
+    SimilarProjectsView,
+    TagViewSet,
+    ProjectViewSet,
+)
 
 router = DefaultRouter()
 router.register(r"categories", CategoryViewSet)
@@ -11,4 +20,6 @@ urlpatterns = [
     path("home/", HomepageView.as_view(), name="homepage"),
     path("search/", ProjectSearchView.as_view(), name="project-search"),
     path("<int:pk>/similar/", SimilarProjectsView.as_view(), name="similar-projects"),
+    path("<int:project_id>/comments/", ProjectCommentCollectionView.as_view(), name="project-comments"),
+    path("comments/<int:pk>/", ProjectCommentDetailView.as_view(), name="project-comment-detail"),
 ]
