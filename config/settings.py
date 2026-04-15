@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from django.conf import settings
 from decouple import config,Csv
 
 
@@ -33,25 +34,33 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='',cast=Csv())
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     'apps.tag',
-    'django.contrib.admin',
+    'apps.authentication', 
+    'apps.projects',
+    'apps.core',
+
+    'rest_framework', 
+    'rest_framework_simplejwt', # tool handle jwt
+    'rest_framework_simplejwt.token_blacklist', # handle logouts by remembring invalidated tokens has its own db tables
+
+    'django.contrib.admin', # can be removed
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
+    'django.contrib.sessions', #we are working JWT
+    'django.contrib.messages',#to be commented
     'django.contrib.staticfiles',
     'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', #to be commented
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware', # needed for httponly in react
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware', # to be commented
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -133,3 +142,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'authentication.User' 
+# reserved var that django looks at to tell it what is the authn table to use instead of the default one
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+

@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "name":"#manga"
+        "name":"#MO"
       }
   auth: inherit
 
