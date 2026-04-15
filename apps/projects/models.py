@@ -22,8 +22,6 @@ class Tag(models.Model):
         return self.name if self.name else f"Tag {self.id}"
 
 
-
-
 class Project(models.Model):
     title = models.CharField(max_length=255)
     start_date = models.DateField()
@@ -32,12 +30,17 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
+    avg_rate = models.FloatField(default=0, blank=True)
+
     class Status(models.TextChoices):
         BANNED = "banned", "Banned"
         PENDING = "pending", "Pending"
         FINISHED = "finished", "Finished"
         CANCELED = "canceled", "Canceled"
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
-    category =models.ForeignKey(Category,on_delete=models.PROTECT)
-    user= models.ForeignKey(User, on_delete=models.PROTECT)
+
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.PENDING
+    )
+    category = models.ForeignKey(Category, on_delete=models.PROTECT)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
