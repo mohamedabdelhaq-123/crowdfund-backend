@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
         }
 
     def validate(self, attrs):         # ensure password and confirm_password match
-        if attrs['password'] != attrs['confirm_password']: 
+        if attrs['password'] != attrs['confirm_password']:
             raise serializers.ValidationError(
                 {'confirm_password': 'Passwords do not match.'}
             )
@@ -47,6 +47,10 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
         if value and value > timezone.now().date():
             raise serializers.ValidationError("Birthdate cannot be in the future.")
         return value
+
+    def create(self, validated_data):            # remove confirm_password and use create_user() to hash the password
+        validated_data.pop('confirm_password')
+        return User.objects.create_user(**validated_data)
 
 
 class LoginSerializer(serializers.Serializer):      # validates login credentials and activation status

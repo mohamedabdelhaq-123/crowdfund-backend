@@ -166,6 +166,19 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='sandbox.smtp.mailtrap.io')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # 587 is the standard SMTP port for TLS (STARTTLS)
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = 'Crowdfund <noreply@crowdfund.io>'
+
+# Frontend URL — used to build activation links sent in emails
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',      # reads JWT from cookies

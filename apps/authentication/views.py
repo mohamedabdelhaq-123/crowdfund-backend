@@ -47,6 +47,7 @@ class ActivateAccountView(APIView):      # GET /auth/activate/<token>/ — verif
 
         try:
             user_pk = signer.unsign(token, max_age=86400)      # return the id and check the max_age is 24 hours
+
         except signing.SignatureExpired:
             return Response(
                 {'error': 'Activation link has expired. Please request a new one.'},
@@ -141,7 +142,6 @@ class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh toke
 class ResendActivationView(APIView):      # POST /auth/resend-activation/ — sends new activation email with cooldown
     permission_classes = [AllowAny]
     authentication_classes = []
-
 
     def post(self, request):
         email = request.data.get('email')
