@@ -56,7 +56,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     
 
-    profile_pic = models.ImageField(upload_to='profiles/', null=True, blank=True) 
+    profile_pic = models.URLField(null=True, blank=True) 
+    profile_pic_public_id = models.CharField(max_length=255, null=True, blank=True)
+   
     mobile_number = models.CharField(validators=[egyptian_phone_regex], max_length=11, unique=True) # need validator
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
     birthdate = models.DateField(null=True, blank=True)
@@ -72,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
     USERNAME_FIELD = 'email' # user log in using the email
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'mobile_number']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'mobile_number'] #must enter when create superuser
 
 
 

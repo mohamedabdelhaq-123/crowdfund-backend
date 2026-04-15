@@ -14,6 +14,7 @@ from pathlib import Path
 import os
 from django.conf import settings
 from decouple import config,Csv
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -45,6 +46,7 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     'rest_framework_simplejwt', # tool handle jwt
     'rest_framework_simplejwt.token_blacklist', # handle logouts by remembring invalidated tokens has its own db tables
     'django_extensions', 
+    # 'anymail',
     'django.contrib.admin', # can be removed
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,8 +58,9 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', #to be commented
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', #to be commented
+    
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware', # needed for httponly in react
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -147,11 +150,59 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'authentication.User' 
 # reserved var that django looks at to tell it what is the authn table to use instead of the default one
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp-relay.brevo.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # 587 is the standard SMTP port for TLS (STARTTLS)
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='mohamed.kholy2011@gmail.com')
+
+
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+
+CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='sandbox.smtp.mailtrap.io')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int) # 587 is the standard SMTP port for TLS (STARTTLS)
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = 'Crowdfund <noreply@crowdfund.io>'
+
+# Frontend URL — used to build activation links sent in emails
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',      # reads JWT from cookies
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',      # reject unauthenticated by default
     ),
 }
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),      # short-lived so stolen tokens expire fast
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,      # issue new refresh token on each use
+    'BLACKLIST_AFTER_ROTATION': True,      # old refresh tokens auto-blacklisted
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+
+    'AUTH_COOKIE': 'access',      # cookie name for access token
+    'AUTH_COOKIE_REFRESH': 'refresh',      # cookie name for refresh token
+    'AUTH_COOKIE_DOMAIN': None,
+    'AUTH_COOKIE_SECURE': False,      # True in production (HTTPS only)
+    'AUTH_COOKIE_HTTP_ONLY': True,      # JS cannot read these cookies
+    'AUTH_COOKIE_PATH': '/',
+    'AUTH_COOKIE_SAMESITE': 'Lax',
+}
+

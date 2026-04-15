@@ -12,3 +12,4 @@ python-decouple==3.8
 sqlparse==0.5.5
 typing_extensions==4.15.0
 django-extensions==4.1
+django-anymail==14.0
