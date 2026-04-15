@@ -2,6 +2,7 @@ from xml.parsers.expat import model
 
 from django.db import models
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from apps.authentication.models import User
 
@@ -41,6 +42,16 @@ class Project(models.Model):
     category =models.ForeignKey(Category,on_delete=models.PROTECT)
     user= models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class ProjectRating(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="ratings")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="project_ratings")
+    stars = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("project", "user")
 
 
 class Comment(models.Model):

@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework import generics, filters, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
+from django.db.models import Avg
 
-from .models import Category, Comment, CommentReport, Project, ProjectReport, Tag
-from .serializers import CategorySerializer, CommentSerializer, ProjectSerializer, TagSerializer
+from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag
+from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
@@ -27,7 +28,11 @@ class HomepageView(APIView):
 
         featured_projects = Project.objects.filter(is_featured=True)[:5]
 
-        top_rated_projects = Project.objects.order_by("-avg_rate")[:5]
+        top_rated_projects = (
+            Project.objects.annotate(avg_rating=Avg("ratings__stars"))
+            .filter(avg_rating__isnull=False)
+            .order_by("-avg_rating", "-created_at")[:5]
+        )
 
         categories = Category.objects.all()
 
@@ -127,3 +132,22 @@ class ProjectReportCreateView(APIView):
 
         ProjectReport.objects.create(project=project, user=request.user)
         return Response({"detail": "project flagged as inappropriate"}, status=status.HTTP_201_CREATED)
+
+
+class ProjectRatingCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        rating = ProjectRating.objects.filter(project=project, user=request.user).first()
+
+        if rating:
+            serializer = ProjectRatingSerializer(rating, data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        serializer = ProjectRatingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(project=project, user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from django.db.models import Avg
 
-from .models import Comment, Project, Tag
+from .models import Comment, Project, ProjectRating, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,8 +29,15 @@ class ProjectSerializer(serializers.ModelSerializer):
     return f"{obj.user.first_name} {obj.user.last_name}"
 
   def get_calculate_average_rating(self, obj):
-    # TODO: Implement the logic to calculate the average rating for the grade
-    pass
+    average = obj.ratings.aggregate(average=Avg("stars"))["average"]
+    return round(average, 2) if average is not None else 0
+
+
+class ProjectRatingSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = ProjectRating
+    fields = ["id", "project", "user", "stars", "created_at"]
+    read_only_fields = ["id", "project", "user", "created_at"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
