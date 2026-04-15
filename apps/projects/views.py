@@ -10,17 +10,20 @@ from .models import Category, Comment, CommentReport, Project, ProjectRating, Pr
 from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+
 class TagViewSet(viewsets.ModelViewSet):
-  queryset = Tag.objects.all()
-  serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset=Project.objects.all()
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
 
 class HomepageView(APIView):
     def get(self, request):

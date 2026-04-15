@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db.models import Avg
 
-from .models import Comment, Project, ProjectRating, Tag
+from .models import Category, Comment, Project, ProjectRating, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -12,7 +12,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
   class Meta:
-    model = Tag
+    model = Category
     fields = "__all__"
 
 

@@ -6,6 +6,8 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from .serializers import ProfileSerializer, DeleteAccountSerializer
 from apps.authentication.models import User
+from apps.projects.models import Project
+from apps.projects.serializers import ProjectSerializer
 
 
 class ProfileView(APIView):
@@ -53,4 +55,13 @@ class PublicProfileView(APIView):
             )
 
         serializer = ProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MyProjectsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        projects = Project.objects.filter(user=request.user)
+        serializer = ProjectSerializer(projects, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
