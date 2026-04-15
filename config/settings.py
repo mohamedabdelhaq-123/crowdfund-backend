@@ -39,6 +39,7 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     'apps.authentication', 
     'apps.projects',
     'apps.core',
+    'apps.profiles',
 
     'rest_framework', 
     'rest_framework_simplejwt', # tool handle jwt
@@ -149,3 +150,8 @@ AUTH_USER_MODEL = 'authentication.User'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
