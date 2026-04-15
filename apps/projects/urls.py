@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     CategoryViewSet,
+    CommentReportCreateView,
     HomepageView,
     ProjectCommentCollectionView,
     ProjectCommentDetailView,
@@ -22,4 +23,5 @@ urlpatterns = [
     path("<int:pk>/similar/", SimilarProjectsView.as_view(), name="similar-projects"),
     path("<int:project_id>/comments/", ProjectCommentCollectionView.as_view(), name="project-comments"),
     path("comments/<int:pk>/", ProjectCommentDetailView.as_view(), name="project-comment-detail"),
+    path("comments/<int:pk>/report/", CommentReportCreateView.as_view(), name="comment-report"),
 ]
