@@ -1,11 +1,17 @@
 info:
   name: Delete Comment
   type: http
-  seq: 4
+  seq: 3
 
 http:
-  method: PATCH
-  url: "{{baseUrl}}/projects/comments/1/"
+  method: DELETE
+  url: "{{baseUrl}}/projects/comments/6/"
+  body:
+    type: json
+    data: |-
+      {
+      "content": "Edited comment text"
+      }
   auth: inherit
 
 settings:
