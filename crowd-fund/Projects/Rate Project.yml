@@ -1,16 +1,16 @@
 info:
-  name: resend activiation
+  name: Rate Project
   type: http
-  seq: 5
+  seq: 8
 
 http:
   method: POST
-  url: "{{baseUrl}}/auth/resend-activation/"
+  url: "{{baseUrl}}/projects/1/rate/"
   body:
     type: json
     data: |-
       {
-          "email": "mohamed.kholy2011@gmail.com"
+      "stars": 5
       }
   auth: inherit
 

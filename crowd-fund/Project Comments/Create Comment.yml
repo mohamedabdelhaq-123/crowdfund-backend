@@ -1,16 +1,16 @@
 info:
-  name: resend activiation
+  name: Create Comment
   type: http
-  seq: 5
+  seq: 2
 
 http:
   method: POST
-  url: "{{baseUrl}}/auth/resend-activation/"
+  url: "{{baseUrl}}/projects/1/comments/"
   body:
     type: json
     data: |-
       {
-          "email": "mohamed.kholy2011@gmail.com"
+      "content": "This project looks good"
       }
   auth: inherit
 
