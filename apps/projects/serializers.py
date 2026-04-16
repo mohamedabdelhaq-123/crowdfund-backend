@@ -17,14 +17,29 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-  category = serializers.ReadOnlyField(source="category.name")
+  category_name = serializers.ReadOnlyField(source="category.name")
   user_fullname = serializers.SerializerMethodField()
   calculate_average_rating = serializers.SerializerMethodField()
 
   class Meta:
     model = Project
-    fields = "__all__"
-    read_only_fields = ["user"]
+    fields = [
+      "id",
+      "title",
+      "start_date",
+      "end_date",
+      "details",
+      "target",
+      "current_money",
+      "is_featured",
+      "avg_rate",
+      "status",
+      "category_name",
+      "user_fullname",
+      "calculate_average_rating",
+      "created_at",
+    ]
+    
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"

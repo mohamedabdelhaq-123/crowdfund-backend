@@ -21,13 +21,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    #users
     path('admin/', admin.site.urls),
     path('auth/', include('apps.authentication.urls')),
-
     path('api/users/', include('apps.profiles.urls')),
-    path('api/projects/', include('apps.projects.urls')),
 
-    # path('', include('apps.tag.urls')),
+    #projects and donations
+    path('api/projects/', include('apps.projects.urls')),
+    path('api/donations/', include('apps.donations.urls')),
+
     path('api/auth/', include('apps.authentication.urls')),
 ]
 

@@ -6,7 +6,9 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/projects/"
-  auth: inherit
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2MzA4MTYwLCJpYXQiOjE3NzYzMDcyNjAsImp0aSI6IjM4MzFjMjA3MmM0NjRmN2E5N2IxNDkxNjJmYTM5ZjI1IiwidXNlcl9pZCI6IjE1In0.9hT8WakuwuvWENY-rrFHo_5DgQO9QKv_Vh_yd6yFYiY
 
 settings:
   encodeUrl: true

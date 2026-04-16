@@ -1,18 +1,22 @@
 info:
-  name: login
+  name: Create Donation
   type: http
   seq: 3
 
 http:
   method: POST
-  url: "{{baseUrl}}/auth/login/"
+  url: "{{baseUrl}}/donations/"
   body:
     type: json
     data: |-
       {
-        "email": "tandrew14emad14@gmail.com",
-        "password": "12345678"
+        "amount":400,
+        "project":8,
+        "user":1
       }
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true

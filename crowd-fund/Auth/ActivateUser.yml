@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/auth/activate/10%3A1wDAcR%3ADCFXkda9IUi8iDNdzVR0JVgVvhD833gAIm52u7nRTIY/"
+  url: "{{baseUrl}}/auth/activate/20%3A1wDEoo%3A26vNHqP7OG-ONfkw7bAyTzb-bNpkzNN1a8tG9PxhyHQ/"
   auth: inherit
 
 settings:
