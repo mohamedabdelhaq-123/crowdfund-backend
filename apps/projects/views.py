@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, filters, status
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 
@@ -52,12 +52,14 @@ class HomepageView(APIView):
 class ProjectSearchView(generics.ListAPIView):
     queryset = Project.objects.filter(status="pending")
     serializer_class = ProjectSerializer
+    permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ["title", "details", "category__name", "tags__name"]
 
 
 class SimilarProjectsView(generics.ListAPIView):
     serializer_class = ProjectSerializer
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         project_id = self.kwargs.get("pk")

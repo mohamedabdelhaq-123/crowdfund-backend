@@ -24,6 +24,7 @@ class ProjectSerializer(serializers.ModelSerializer):
   class Meta:
     model = Project
     fields = "__all__"
+    read_only_fields = ["user"]
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"

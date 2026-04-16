@@ -13,6 +13,10 @@ def send_activation_email(user):      # Generate a signed token with user PK and
 
     activation_url = f"{settings.FRONTEND_URL}/activate/{token}"
 
+    # Testing helper: print activation data in terminal only in DEBUG mode.
+    if settings.DEBUG:
+        print(f"[TEST ONLY] Activation code for {user.email}: {token}", flush=True)
+
     subject = 'Activate Your Crowdfund Account'
     message = (
         f"Hi {user.first_name},\n\n"

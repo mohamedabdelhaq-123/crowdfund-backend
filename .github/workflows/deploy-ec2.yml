@@ -42,9 +42,9 @@ jobs:
               fi
             }
 
-            docker builder prune -af || true
-
             compose -p crowdfund up -d --build --no-deps backend
+
+            docker builder prune -af || true
 
             # Remove dangling images created by rebuilds
             docker image prune -f

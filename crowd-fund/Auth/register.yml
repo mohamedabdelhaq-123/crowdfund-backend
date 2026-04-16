@@ -10,12 +10,12 @@ http:
     type: json
     data: |-
       {
-          "first_name": "Ahmed",
-          "last_name": "Mohamed",
-          "email": "ahmed@test.com",
-          "password": "SecurePass123",
-          "confirm_password": "SecurePass123",
-          "mobile_number": "01020345678"
+          "first_name": "Mohamed",
+          "last_name": "Sameh",
+          "email": "mohamed.kholy2011@hotmail.com",
+          "password": "12345678",
+          "confirm_password": "12345678",
+          "mobile_number": "01020345672"
       }
   auth: inherit
 

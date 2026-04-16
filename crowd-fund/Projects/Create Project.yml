@@ -1,7 +1,7 @@
 info:
   name: Create Project
   type: http
-  seq: 2
+  seq: 3
 
 http:
   method: POST
@@ -18,9 +18,7 @@ http:
         "current_money": 12500.5,
         "is_featured": true,
         "status": "pending",
-        "category": 3,
-        "user": 14,
-        "created_at": "2026-04-15T09:35:47Z"
+        "category": 1
       }
   auth: inherit
 

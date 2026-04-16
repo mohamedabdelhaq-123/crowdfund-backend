@@ -68,7 +68,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS',default='',cast=Csv())
+CORS_ALLOWED_ORIGINS = config('FRONTEND_URL', default='', cast=Csv())
 
 
 ROOT_URLCONF = 'config.urls'
