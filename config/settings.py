@@ -54,6 +54,10 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     'django.contrib.messages',#to be commented
     'django.contrib.staticfiles',
     'corsheaders',
+    #cloudinary
+    'cloudinary_storage',
+    'cloudinary',
+
 ]
 
 MIDDLEWARE = [
@@ -200,3 +204,19 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_SAMESITE': 'Lax',
 }
 
+# Cloudinary configuration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': config('CLOUDINARY_API_KEY'),
+    'API_SECRET': config('CLOUDINARY_API_SECRET'),
+}
+# Tell Django to use Cloudinary for media storage
+STORAGES = {
+  'default': {
+    'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage' 
+  }, 
+  'staticfiles': {                                                 # this is the storage for static files
+    'BACKEND': 'django.core.files.storage.FileSystemStorage'       # this is django's default storage for static files, for using cloudinry as static files storage see usage with static files section
+  }
+}
+MEDIA_URL = '/CrowdFundingProject/'  # or any prefix you choose
