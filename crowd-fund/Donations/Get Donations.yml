@@ -1,0 +1,17 @@
+info:
+  name: Get Donations
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/donations/"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

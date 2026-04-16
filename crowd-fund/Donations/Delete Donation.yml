@@ -1,16 +1,18 @@
 info:
-  name: Get Project
+  name: Delete Donation
   type: http
-  seq: 2
+  seq: 6
 
 http:
-  method: GET
-  url: "{{baseUrl}}/projects/:id/"
+  method: DELETE
+  url: "{{baseUrl}}/donations/:id/"
   params:
     - name: id
-      value: "8"
+      value: "2"
       type: path
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true
