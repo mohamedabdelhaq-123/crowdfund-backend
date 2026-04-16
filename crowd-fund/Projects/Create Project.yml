@@ -7,23 +7,49 @@ http:
   method: POST
   url: "{{baseUrl}}/projects/"
   body:
-    type: json
-    data: |-
-      {
-        "title": "Solar Community Garden",
-        "start_date": "2026-05-01",
-        "end_date": "2026-12-31",
-        "details": "A project aimed at installing solar panels in urban community spaces.",
-        "target": 50000.0,
-        "current_money": 12500.5,
-        "is_featured": true,
-        "status": "pending",
-        "category": 2,
-        "user":10
-      }
+    type: multipart-form
+    data:
+      - name: title
+        type: text
+        value: SpaceX Mars Colony
+      - name: start_date
+        type: text
+        value: 2026-05-01
+      - name: end_date
+        type: text
+        value: 2026-12-31
+      - name: details
+        type: text
+        value: A project to fund the first pizza shop on Mars.
+      - name: target
+        type: text
+        value: "100000.0"
+      - name: current_money
+        type: text
+        value: "0"
+      - name: is_featured
+        type: text
+        value: "false"
+      - name: image
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/154-1546602_logo-linux-linux-logo-first.jpg
+      - name: status
+        type: text
+        value: pending
+      - name: category
+        type: text
+        value: "2"
+      - name: user
+        type: text
+        value: "18"
+      - name: created_at
+        type: text
+        value: ""
+        disabled: true
   auth:
     type: bearer
-    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2MzA0MzcyLCJpYXQiOjE3NzYzMDM0NzIsImp0aSI6IjNkOGYxY2M5ZTMxOTQwNTA5N2JhNjAwYjU0NTQzNTg5IiwidXNlcl9pZCI6IjEwIn0.6P-6KQ44FxXVY83U96sXH_TlNIbnB4ZeDXL81WdACN0
+    token: "{{token}}"
 
 settings:
   encodeUrl: true

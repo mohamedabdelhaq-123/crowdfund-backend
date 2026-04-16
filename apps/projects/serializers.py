@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db.models import Avg
-
+import cloudinary
 from .models import Category, Comment, Project, ProjectRating, Tag
 
 
@@ -19,8 +19,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
   category_name = serializers.ReadOnlyField(source="category.name")
   user_fullname = serializers.SerializerMethodField()
+  uploaded_image_url = serializers.SerializerMethodField()
   calculate_average_rating = serializers.SerializerMethodField()
-
+ 
   class Meta:
     model = Project
     fields = [
@@ -36,9 +37,19 @@ class ProjectSerializer(serializers.ModelSerializer):
       "status",
       "category_name",
       "user_fullname",
+      'user',
+      'category',
+      "image",
+      "uploaded_image_url",
       "calculate_average_rating",
       "created_at",
     ]
+    extra_kwargs = {         
+            "category": {"write_only": True},
+            "image": {"write_only": True},
+            "user": {"write_only": True},
+            "created_at": {"read_only": True},
+        }
     
 
   def get_user_fullname(self, obj):
@@ -47,6 +58,13 @@ class ProjectSerializer(serializers.ModelSerializer):
   def get_calculate_average_rating(self, obj):
     average = obj.ratings.aggregate(average=Avg("stars"))["average"]
     return round(average, 2) if average is not None else 0
+
+  def get_uploaded_image_url(self, obj):
+    return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 
+  
+
+
+
 
 
 class ProjectRatingSerializer(serializers.ModelSerializer):
