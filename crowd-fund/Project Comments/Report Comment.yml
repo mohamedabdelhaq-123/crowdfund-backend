@@ -1,11 +1,11 @@
 info:
   name: Report Comment
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: POST
-  url: "{{baseUrl}}/projects/comments/1/report/"
+  url: "{{baseUrl}}/projects/comments/2/report/"
   auth: inherit
 
 settings:
