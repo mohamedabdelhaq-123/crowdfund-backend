@@ -19,7 +19,7 @@ from .views import (
 router = DefaultRouter()
 router.register(r"categories", CategoryViewSet)
 router.register(r"tags",TagViewSet)
-router.register(r"",ProjectViewSet)
+router.register(r"",ProjectViewSet,basename='project')
 urlpatterns = [
     path("", include(router.urls)),
     path("home/", HomepageView.as_view(), name="homepage"),
