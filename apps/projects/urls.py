@@ -12,6 +12,8 @@ from .views import (
     SimilarProjectsView,
     TagViewSet,
     ProjectViewSet,
+    ProjectImageListView,
+    ProjectImageDetailView
 )
 
 router = DefaultRouter()
@@ -28,4 +30,6 @@ urlpatterns = [
     path("<int:project_id>/comments/", ProjectCommentCollectionView.as_view(), name="project-comments"),
     path("comments/<int:pk>/", ProjectCommentDetailView.as_view(), name="project-comment-detail"),
     path("comments/<int:pk>/report/", CommentReportCreateView.as_view(), name="comment-report"),
+    path("<int:project_id>/images/",ProjectImageListView.as_view(),name='project-image'),
+    path("<int:project_id>/images/<int:pk>/",ProjectImageDetailView.as_view(),name='project-image-detail')
 ]

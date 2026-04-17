@@ -8,8 +8,63 @@ http:
   url: "{{baseUrl}}/projects/:id/"
   params:
     - name: id
-      value: "1"
+      value: "22"
       type: path
+  body:
+    type: multipart-form
+    data:
+      - name: title
+        type: text
+        value: kill me
+      - name: start_date
+        type: text
+        value: 2026-05-01
+      - name: end_date
+        type: text
+        value: 2026-12-31
+      - name: details
+        type: text
+        value: A project to fund the first pizza shop on Mars.
+      - name: target
+        type: text
+        value: "100000.0"
+      - name: current_money
+        type: text
+        value: "0"
+      - name: is_featured
+        type: text
+        value: "false"
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/154-1546602_logo-linux-linux-logo-first.jpg
+      - name: status
+        type: text
+        value: pending
+      - name: category
+        type: text
+        value: "2"
+      - name: user
+        type: text
+        value: "1"
+      - name: created_at
+        type: text
+        value: ""
+        disabled: true
+      - name: tags
+        type: text
+        value: you can
+      - name: tags
+        type: text
+        value: help me
+        disabled: true
+      - name: tags
+        type: text
+        value: "1"
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/1.jpg
   auth: inherit
 
 settings:

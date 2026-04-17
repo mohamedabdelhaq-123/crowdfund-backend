@@ -12,9 +12,8 @@ class Category(models.Model):
     def __str__(self):
         return self.name if self.name else f"Category {self.id}"
 
-
 class Tag(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255,unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -29,9 +28,9 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
-    image = models.ImageField(upload_to='project/',blank=True, null=True)
-    avg_rate = models.FloatField(default=0, blank=True)
-
+    avg_rate = models.FloatField(default=0, blank=True) # to be removed after implementing the rating system
+    tags = models.ManyToManyField(Tag,blank=True,null=True)
+    
     class Status(models.TextChoices):
         BANNED = "banned", "Banned"
         PENDING = "pending", "Pending"
@@ -45,6 +44,9 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
 
+class Image(models.Model):
+    path = models.ImageField(upload_to='project/',blank=True, null=True,max_length=10000)
+    project = models.ForeignKey(Project,on_delete=models.CASCADE)
 
 class ProjectRating(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="ratings")
