@@ -185,11 +185,10 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'apps.authentication.authentication.CookieJWTAuthentication',      # reads JWT from cookies
+        'apps.authentication.authentication.CookieJWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',      # reject unauthenticated by default
-    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
 }
 
 IS_PRODUCTION = not DEBUG
@@ -227,8 +226,3 @@ STORAGES = {
   }
 }
 MEDIA_URL = '/CrowdFundingProject/'  # or any prefix you choose
-
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
-}
