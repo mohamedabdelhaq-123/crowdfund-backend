@@ -49,13 +49,18 @@ http:
         disabled: true
       - name: tags
         type: text
-        value: "1"
+        value: you can
       - name: tags
         type: text
-        value: "2"
+        value: help me
       - name: tags
         type: text
         value: "1"
+        disabled: true
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/1.jpg
   auth:
     type: bearer
     token: "{{token}}"

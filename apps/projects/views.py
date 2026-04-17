@@ -7,8 +7,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticate
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg
 
-from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag
-from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer
+from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag,Image
+from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer,ImageSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -26,6 +26,32 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     parser_classes = (MultiPartParser, FormParser)
 
+class ProjectImageListView(generics.ListCreateAPIView):
+    serializer_class = ImageSerializer
+
+    def get_queryset(self):
+        return Image.objects.filter(project_id=self.kwargs['project_id'])
+
+    def create(self, request, *args, **kwargs):
+ 
+        files = request.FILES.getlist('image') 
+        project = generics.get_object_or_404(Project, id=self.kwargs['project_id'])
+        
+        instances = [Image(path=f,project=project) for f in files]
+        Image.objects.bulk_create(instances)
+        
+        return Response({"detail": "Images uploaded."}, status=status.HTTP_201_CREATED)
+
+class ProjectImageDetailView(generics.DestroyAPIView):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+
+    def get_queryset(self):
+        return Image.objects.filter(project_id=self.kwargs['project_id'])
+    
+
+
+    
 class HomepageView(APIView):
     def get(self, request):
         latest_projects = Project.objects.order_by("-created_at")[:5]

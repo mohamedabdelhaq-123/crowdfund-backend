@@ -8,8 +8,75 @@ http:
   url: "{{baseUrl}}/projects/:id/"
   params:
     - name: id
-      value: "1"
+      value: "22"
       type: path
+  body:
+    type: multipart-form
+    data:
+      - name: title
+        type: text
+        value: 3aaaa me
+      - name: start_date
+        type: text
+        value: 2026-05-01
+        disabled: true
+      - name: end_date
+        type: text
+        value: 2026-12-31
+        disabled: true
+      - name: details
+        type: text
+        value: A project to fund the first pizza shop on Mars.
+        disabled: true
+      - name: target
+        type: text
+        value: "100000.0"
+        disabled: true
+      - name: current_money
+        type: text
+        value: "0"
+        disabled: true
+      - name: is_featured
+        type: text
+        value: "false"
+        disabled: true
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/154-1546602_logo-linux-linux-logo-first.jpg
+        disabled: true
+      - name: status
+        type: text
+        value: pending
+        disabled: true
+      - name: category
+        type: text
+        value: "2"
+        disabled: true
+      - name: user
+        type: text
+        value: "1"
+        disabled: true
+      - name: created_at
+        type: text
+        value: ""
+        disabled: true
+      - name: tags
+        type: text
+        value: you can
+        disabled: true
+      - name: tags
+        type: text
+        value: help me
+        disabled: true
+      - name: tags
+        type: text
+        value: "1"
+        disabled: true
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/hey-guys-what-do-you-think-these-2-bugs-are-in-real-life-v0-sa4htv510lob1.jpg
   auth: inherit
 
 settings:

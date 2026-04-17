@@ -16,18 +16,18 @@ class CategorySerializer(serializers.ModelSerializer):
     fields = "__all__"
 
 class ImageSerializer(serializers.ModelSerializer):
-   class Meta:
-    model = Category
-    fields = "__all__"
+  class Meta:
+    model = Image
+    fields = ['id','path']
 
 
 
 class ProjectSerializer(serializers.ModelSerializer):
   category_name = serializers.ReadOnlyField(source="category.name")
   user_fullname = serializers.SerializerMethodField()
-  # uploaded_image_url = serializers.SerializerMethodField()
-  tags = serializers.PrimaryKeyRelatedField(many=True ,queryset=Tag.objects.all(),write_only=True)
-  images  = serializers.PrimaryKeyRelatedField(many=True,queryset=Image.objects.all(),write_only=True)
+  tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True)
+  images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False)
+                                  ,write_only=True,required=False)
   calculate_average_rating = serializers.SerializerMethodField()
   tags_names = serializers.SlugRelatedField(
     many=True, 
@@ -35,12 +35,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     slug_field='name', 
     source='tags'
 )
-  images_urls = serializers.SlugRelatedField(
-    many=True,
-    read_only=True,
-    slug_field='path',
-    source='images'
-  )
+  images_urls = ImageSerializer(many=True,read_only=True,source='image_set')
   class Meta:
     model = Project
     fields = [
@@ -54,8 +49,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "category": {"write_only": True},
             "user": {"write_only": True},
             "created_at": {"read_only": True},
-            "tags":{"write_only":True},
-            "images":{"write_only":True}
       }
 
   def create(self,validated_data):
@@ -63,11 +56,58 @@ class ProjectSerializer(serializers.ModelSerializer):
     tags_data = validated_data.pop('tags',[])
     project = Project.objects.create(**validated_data)
     if tags_data:
-      project.tags.set(tags_data)
+      tag_instances = [Tag.objects.get_or_create(name=tag)[0] for tag in tags_data]
+      project.tags.add(*tag_instances) 
     if images_data:
       image_instances = [Image(path=img,project=project) for img in images_data]
       Image.objects.bulk_create(image_instances)
     return project
+
+  def update(self, instance, validated_data):
+    images_data = validated_data.pop('images', None)
+    tags_data = validated_data.pop('tags', None)
+
+    for key,data in validated_data.items():
+      setattr(instance, key, data)
+    instance.save()
+   
+
+    if tags_data:
+        tag_instances = [Tag.objects.get_or_create(name=tag)[0] for tag in tags_data]
+        instance.tags.set(tag_instances)
+
+    if images_data:
+        currentImages = instance.image_set.all()
+        for img in currentImages:
+          img.path.delete()
+        currentImages.delete()
+        image_instances = [Image(path=img, project=instance) for img in images_data]
+        Image.objects.bulk_create(image_instances)
+
+    return instance
+
+  def partial_update(self, instance, validated_data):
+    images_data = validated_data.pop('images', None)
+    tags_data = validated_data.pop('tags', None)
+
+    for key,data in validated_data.items():
+      setattr(instance, key, data)
+    instance.save()
+   
+
+    if tags_data:
+        tag_instances = [Tag.objects.get_or_create(name=tag)[0] for tag in tags_data]
+        instance.tags.set(tag_instances)
+
+    if images_data:
+        currentImages = instance.image_set.all()
+        for img in currentImages:
+          img.path.delete()
+        currentImages.delete()
+        image_instances = [Image(path=img, project=instance) for img in images_data]
+        Image.objects.bulk_create(image_instances)
+
+    return instance
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"

@@ -13,7 +13,7 @@ class Category(models.Model):
         return self.name if self.name else f"Category {self.id}"
 
 class Tag(models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255,unique=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -28,7 +28,6 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
-    
     avg_rate = models.FloatField(default=0, blank=True) # to be removed after implementing the rating system
     tags = models.ManyToManyField(Tag,blank=True,null=True)
     
@@ -46,7 +45,7 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Image(models.Model):
-    path = models.ImageField(upload_to='project/',blank=True, null=True)
+    path = models.ImageField(upload_to='project/',blank=True, null=True,max_length=10000)
     project = models.ForeignKey(Project,on_delete=models.CASCADE)
 
 class ProjectRating(models.Model):
