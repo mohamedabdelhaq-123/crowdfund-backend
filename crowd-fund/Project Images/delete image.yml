@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/projects/:id/images/:pk/"
   params:
     - name: pk
-      value: "32"
+      value: "35"
       type: path
     - name: id
       value: "22"

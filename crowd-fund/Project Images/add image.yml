@@ -14,9 +14,8 @@ http:
     type: multipart-form
     data:
       - name: image
-        type: file
-        value:
-          - /Users/andrewemad/Downloads/6-Dandadan-manga-ch-16.webp
+        type: text
+        value: ""
   auth: inherit
 
 settings:
