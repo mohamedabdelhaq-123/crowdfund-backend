@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/projects/1/report/"
+  url: "{{baseUrl}}/projects/8/report/"
   auth: inherit
 
 settings:

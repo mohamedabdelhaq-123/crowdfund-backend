@@ -1,16 +1,16 @@
 info:
   name: Update Comment
   type: http
-  seq: 3
+  seq: 2
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/projects/comments/1/"
+  url: "{{baseUrl}}/projects/comments/2/"
   body:
     type: json
     data: |-
       {
-      "content": "This project looks good"
+      "content": "Edited comment text"
       }
   auth: inherit
 

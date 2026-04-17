@@ -5,12 +5,12 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/projects/1/rate/"
+  url: "{{baseUrl}}/projects/8/rate/"
   body:
     type: json
     data: |-
       {
-      "stars": 5
+      "stars": 3
       }
   auth: inherit
 
