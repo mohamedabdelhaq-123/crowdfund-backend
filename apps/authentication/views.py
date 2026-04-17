@@ -88,6 +88,7 @@ class ActivateAccountView(APIView):      # GET /auth/activate/<token>/ — verif
 
 class LoginView(APIView):      # POST /auth/login/ — validates credentials and sets JWT httpOnly cookies
     permission_classes = [AllowAny]
+    authentication_classes = []
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)

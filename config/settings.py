@@ -179,7 +179,7 @@ CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origi
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',      # reads JWT from cookies
+        'apps.authentication.authentication.CookieJWTAuthentication',      # reads JWT from cookies
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',      # reject unauthenticated by default
