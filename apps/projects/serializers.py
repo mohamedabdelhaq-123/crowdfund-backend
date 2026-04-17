@@ -25,10 +25,11 @@ class ImageSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
   category_name = serializers.ReadOnlyField(source="category.name")
   user_fullname = serializers.SerializerMethodField()
+  is_reported_by_me = serializers.SerializerMethodField()
+  avg_rate=serializers.FloatField(read_only=True)
   tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True)
   images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False)
                                   ,write_only=True,required=False)
-  calculate_average_rating = serializers.SerializerMethodField()
   tags_names = serializers.SlugRelatedField(
     many=True, 
     read_only=True, 
@@ -41,9 +42,9 @@ class ProjectSerializer(serializers.ModelSerializer):
     fields = [
         "id", "title", "status", "is_featured",
         "start_date", "end_date", "created_at",
-        "details", "target", "current_money","images",'images_urls', "avg_rate",
+        "details", "target", "current_money","images",'images_urls',
         "is_reported_by_me", "category", "category_name", "user", "user_fullname",
-        "tags", "tags_names", "calculate_average_rating",
+        "tags", "tags_names", "avg_rate",
     ]
     extra_kwargs = {         
             "category": {"write_only": True},
@@ -112,9 +113,7 @@ class ProjectSerializer(serializers.ModelSerializer):
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
 
-  def get_calculate_average_rating(self, obj):
-    average = obj.ratings.aggregate(average=Avg("stars"))["average"]
-    return round(average, 2) if average is not None else 0
+ 
 
   def get_uploaded_image_url(self, obj):
     return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 

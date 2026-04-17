@@ -5,8 +5,8 @@ from rest_framework import generics, filters, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
-from django.db.models import Avg
-
+from django.db.models import Avg,Value
+from django.db.models.functions import Coalesce
 from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag,Image
 from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSerializer, ProjectSerializer, TagSerializer,ImageSerializer
 
@@ -22,9 +22,12 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all().prefetch_related('tags')
     serializer_class = ProjectSerializer
     parser_classes = (MultiPartParser, FormParser)
+    def get_queryset(self):
+        return Project.objects.all().annotate(
+            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+        ).select_related('user').prefetch_related('tags','image_set')
 
 class ProjectImageListView(generics.ListCreateAPIView):
     serializer_class = ImageSerializer

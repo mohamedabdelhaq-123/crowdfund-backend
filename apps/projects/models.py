@@ -28,7 +28,6 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
-    avg_rate = models.FloatField(default=0, blank=True) # to be removed after implementing the rating system
     tags = models.ManyToManyField(Tag,blank=True,null=True)
     
     class Status(models.TextChoices):
