@@ -22,7 +22,7 @@ class TagViewSet(viewsets.ModelViewSet):
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().prefetch_related('tags')
     serializer_class = ProjectSerializer
     parser_classes = (MultiPartParser, FormParser)
 

@@ -11,7 +11,7 @@ http:
     data:
       - name: title
         type: text
-        value: SpaceX Mars Colony
+        value: fund me
       - name: start_date
         type: text
         value: 2026-05-01
@@ -30,7 +30,7 @@ http:
       - name: is_featured
         type: text
         value: "false"
-      - name: image
+      - name: images
         type: file
         value:
           - /Users/andrewemad/Downloads/154-1546602_logo-linux-linux-logo-first.jpg
@@ -42,11 +42,20 @@ http:
         value: "2"
       - name: user
         type: text
-        value: "18"
+        value: "1"
       - name: created_at
         type: text
         value: ""
         disabled: true
+      - name: tags
+        type: text
+        value: "1"
+      - name: tags
+        type: text
+        value: "2"
+      - name: tags
+        type: text
+        value: "1"
   auth:
     type: bearer
     token: "{{token}}"

@@ -1,11 +1,11 @@
 info:
-  name: Get Tag
+  name: Get Categories
   type: http
   seq: 1
 
 http:
   method: GET
-  url: "{{baseUrl}}/projects/tags/"
+  url: "{{baseUrl}}/projects/categories"
   auth: inherit
 
 settings:
