@@ -29,6 +29,7 @@ class ProjectSerializer(serializers.ModelSerializer):
   images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False)
                                   ,write_only=True,required=False)
   calculate_average_rating = serializers.SerializerMethodField()
+  is_reported_by_me = serializers.SerializerMethodField(read_only=True)
   tags_names = serializers.SlugRelatedField(
     many=True, 
     read_only=True, 
@@ -143,8 +144,32 @@ class CommentSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Comment
-    fields = ["id", "project", "user", "user_fullname", "content", "is_reported_by_me", "created_at"]
+    fields = ["id", "project", "user", "user_fullname", "parent", "content", "is_reported_by_me", "created_at"]
     read_only_fields = ["id", "project", "user", "created_at", "user_fullname", "is_reported_by_me"]
+
+  def validate_parent(self, parent):
+    # If no parent is given, this is a top-level comment
+    if parent is None:
+      return parent
+
+    # Prevent a comment from replying to itself
+    if self.instance and parent.id == self.instance.id:
+      raise serializers.ValidationError("Comment cannot reply to itself.")
+
+    # Get the project ID from context or instance
+    project_id = self.context.get("project_id")
+    if project_id is None and self.instance:
+      project_id = self.instance.project_id
+
+    # Make sure the parent comment is in the same project
+    if project_id is not None and parent.project_id != project_id:
+      raise serializers.ValidationError("Parent comment must belong to the same project.")
+
+    # Only allow replies to top-level comments (not to replies)
+    if parent.parent_id is not None:
+      raise serializers.ValidationError("Replies can only be added to top-level comments.")
+
+    return parent
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
