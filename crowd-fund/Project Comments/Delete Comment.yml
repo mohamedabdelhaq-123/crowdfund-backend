@@ -1,11 +1,11 @@
 info:
   name: Delete Comment
   type: http
-  seq: 3
+  seq: 4
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/projects/comments/6/"
+  url: "{{baseUrl}}/projects/comments/1/"
   body:
     type: json
     data: |-

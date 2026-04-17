@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.db.models import Avg
 import cloudinary
-from .models import Category, Comment, Project, ProjectRating, Tag,Image
+from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag, Image
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -42,7 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         "id", "title", "status", "is_featured",
         "start_date", "end_date", "created_at",
         "details", "target", "current_money","images",'images_urls', "avg_rate",
-        "category", "category_name", "user", "user_fullname",
+        "is_reported_by_me", "category", "category_name", "user", "user_fullname",
         "tags", "tags_names", "calculate_average_rating",
     ]
     extra_kwargs = {         
@@ -117,8 +117,13 @@ class ProjectSerializer(serializers.ModelSerializer):
     return round(average, 2) if average is not None else 0
 
   def get_uploaded_image_url(self, obj):
-    return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True)   #TODO: customize the image sent to client
+    return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 
 
+  def get_is_reported_by_me(self, obj):
+    request = self.context.get("request")
+    if not request or not request.user or not request.user.is_authenticated:
+      return False
+    return ProjectReport.objects.filter(project_id=obj.id, user_id=request.user.id).exists()
   
 
 
@@ -134,11 +139,18 @@ class ProjectRatingSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
   user_fullname = serializers.SerializerMethodField(read_only=True) # calls the get_user_fullname method using
+  is_reported_by_me = serializers.SerializerMethodField(read_only=True)
 
   class Meta:
     model = Comment
-    fields = ["id", "project", "user", "user_fullname", "content", "created_at"]
-    read_only_fields = ["id", "project", "user", "created_at", "user_fullname"]
+    fields = ["id", "project", "user", "user_fullname", "content", "is_reported_by_me", "created_at"]
+    read_only_fields = ["id", "project", "user", "created_at", "user_fullname", "is_reported_by_me"]
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
+
+  def get_is_reported_by_me(self, obj):
+    request = self.context.get("request")
+    if not request or not request.user or not request.user.is_authenticated:
+      return False
+    return CommentReport.objects.filter(comment_id=obj.id, user_id=request.user.id).exists()

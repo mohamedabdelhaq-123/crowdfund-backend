@@ -68,9 +68,9 @@ class HomepageView(APIView):
 
         return Response(
             {
-                "latest": ProjectSerializer(latest_projects, many=True).data,
-                "featured": ProjectSerializer(featured_projects, many=True).data,
-                "top_rated": ProjectSerializer(top_rated_projects, many=True).data,
+                "latest": ProjectSerializer(latest_projects, many=True, context={"request": request}).data,
+                "featured": ProjectSerializer(featured_projects, many=True, context={"request": request}).data,
+                "top_rated": ProjectSerializer(top_rated_projects, many=True, context={"request": request}).data,
                 "categories": CategorySerializer(categories, many=True).data,
             }
         )
@@ -110,12 +110,12 @@ class ProjectCommentCollectionView(APIView):
     def get(self, request, project_id):
         get_object_or_404(Project, id=project_id)
         comments = Comment.objects.filter(project_id=project_id).order_by("-created_at")
-        serializer = CommentSerializer(comments, many=True)
+        serializer = CommentSerializer(comments, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, project_id):
         get_object_or_404(Project, id=project_id)
-        serializer = CommentSerializer(data=request.data)
+        serializer = CommentSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, project_id=project_id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -126,7 +126,7 @@ class ProjectCommentDetailView(APIView):
 
     def patch(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk, user=request.user)
-        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        serializer = CommentSerializer(comment, data=request.data, partial=True, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)

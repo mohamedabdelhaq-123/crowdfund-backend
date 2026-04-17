@@ -1,11 +1,11 @@
 info:
   name: Update Comment
   type: http
-  seq: 2
+  seq: 3
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/projects/comments/2/"
+  url: "{{baseUrl}}/projects/comments/1/"
   body:
     type: json
     data: |-
