@@ -30,8 +30,9 @@ class Project(models.Model):
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
     image = models.ImageField(upload_to='project/',blank=True, null=True)
-    avg_rate = models.FloatField(default=0, blank=True)
-
+    avg_rate = models.FloatField(default=0, blank=True) # to be removed after implementing the rating system
+    tags = models.ManyToManyField(Tag)
+    
     class Status(models.TextChoices):
         BANNED = "banned", "Banned"
         PENDING = "pending", "Pending"

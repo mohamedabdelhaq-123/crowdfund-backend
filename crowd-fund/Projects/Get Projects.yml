@@ -6,9 +6,7 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/projects/"
-  auth:
-    type: bearer
-    token: "{{token}}"
+  auth: inherit
 
 settings:
   encodeUrl: true
