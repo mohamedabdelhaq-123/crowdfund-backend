@@ -119,7 +119,7 @@ class ProjectCommentCollectionView(APIView):
 
     def post(self, request, project_id):
         get_object_or_404(Project, id=project_id)
-        serializer = CommentSerializer(data=request.data, context={"request": request})
+        serializer = CommentSerializer(data=request.data, context={"request": request, "project_id": project_id})
         serializer.is_valid(raise_exception=True)
         serializer.save(user=request.user, project_id=project_id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -130,7 +130,7 @@ class ProjectCommentDetailView(APIView):
 
     def patch(self, request, pk):
         comment = get_object_or_404(Comment, pk=pk, user=request.user)
-        serializer = CommentSerializer(comment, data=request.data, partial=True, context={"request": request})
+        serializer = CommentSerializer(comment, data=request.data, partial=True, context={"request": request, "project_id": comment.project_id})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
