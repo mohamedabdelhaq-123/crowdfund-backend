@@ -12,7 +12,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 from django.core.signing import TimestampSigner
 from urllib.parse import unquote
 
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, MeSerializer
 from .utils import send_activation_email
 from .models import User
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -171,3 +171,11 @@ class ResendActivationView(APIView):      # POST /auth/resend-activation/ — se
 
         send_activation_email(user)
         return Response(generic_msg, status=status.HTTP_200_OK)
+
+
+class MeView(APIView):      # GET /auth/me/ — returns current user's data (requires valid cookie)
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = MeSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

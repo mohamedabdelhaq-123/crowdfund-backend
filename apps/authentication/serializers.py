@@ -87,3 +87,9 @@ class LoginSerializer(serializers.Serializer):      # validates login credential
         attrs['user'] = user      # attach user to validated_data for the view
         return attrs
 
+
+class MeSerializer(serializers.ModelSerializer):      # read-only serializer for GET /auth/me/
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'role']
+        read_only_fields = fields
