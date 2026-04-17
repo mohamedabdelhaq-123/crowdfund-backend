@@ -28,7 +28,7 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag,blank=True,null=True)
+    tags = models.ManyToManyField(Tag, blank=True)
     
     class Status(models.TextChoices):
         BANNED = "banned", "Banned"
@@ -60,7 +60,13 @@ class ProjectRating(models.Model):
 class Comment(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, null=True, blank=True)
+    parent = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="replies",
+    )
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
