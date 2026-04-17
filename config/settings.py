@@ -169,13 +169,19 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 
 CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://crowdfund.duckdns.org',
+]
 
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://crowdfund.duckdns.org',
+]
 
 # Frontend URL — used to build activation links sent in emails
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
-CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -186,6 +192,8 @@ REST_FRAMEWORK = {
     ),
 }
 
+IS_PRODUCTION = not DEBUG
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),      # short-lived so stolen tokens expire fast
@@ -194,14 +202,13 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,      # old refresh tokens auto-blacklisted
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
-
-    'AUTH_COOKIE': 'access',      # cookie name for access token
-    'AUTH_COOKIE_REFRESH': 'refresh',      # cookie name for refresh token
-    'AUTH_COOKIE_DOMAIN': None,
-    'AUTH_COOKIE_SECURE': False,      # True in production (HTTPS only)
-    'AUTH_COOKIE_HTTP_ONLY': True,      # JS cannot read these cookies
+   'AUTH_COOKIE': 'access',
+    'AUTH_COOKIE_REFRESH': 'refresh',
+    'AUTH_COOKIE_DOMAIN': '.duckdns.org' if IS_PRODUCTION else None,  # Allow subdomains
+    'AUTH_COOKIE_SECURE': IS_PRODUCTION,  # ← True for HTTPS
+    'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_SAMESITE': 'Lax',
+    'AUTH_COOKIE_SAMESITE': 'Lax' if not IS_PRODUCTION else 'None',  # None' for cross-origin
 }
 
 # Cloudinary configuration
