@@ -30,10 +30,6 @@ http:
       - name: is_featured
         type: text
         value: "false"
-      - name: images
-        type: file
-        value:
-          - /Users/andrewemad/Downloads/154-1546602_logo-linux-linux-logo-first.jpg
       - name: status
         type: text
         value: pending
@@ -58,9 +54,8 @@ http:
         value: "1"
         disabled: true
       - name: images
-        type: file
-        value:
-          - /Users/andrewemad/Downloads/1.jpg
+        type: text
+        value: ""
   auth:
     type: bearer
     token: "{{token}}"

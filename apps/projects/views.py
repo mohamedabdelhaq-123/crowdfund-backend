@@ -42,12 +42,13 @@ class ProjectImageListView(generics.ListCreateAPIView):
         
         return Response({"detail": "Images uploaded."}, status=status.HTTP_201_CREATED)
 
-class ProjectImageDetailView(generics.DestroyAPIView):
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
+class ProjectImageDetailView(APIView):
 
-    def get_queryset(self):
-        return Image.objects.filter(project_id=self.kwargs['project_id'])
+    def delete(self, request,project_id, pk, format=None):
+        image = get_object_or_404(Image,project=project_id,id=pk)
+        image.path.delete()
+        image.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 
 
