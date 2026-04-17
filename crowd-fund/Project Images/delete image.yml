@@ -1,0 +1,22 @@
+info:
+  name: delete image
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/projects/:id/images/:pk/"
+  params:
+    - name: pk
+      value: "32"
+      type: path
+    - name: id
+      value: "22"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

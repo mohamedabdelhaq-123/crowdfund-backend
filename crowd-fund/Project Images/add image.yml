@@ -1,0 +1,26 @@
+info:
+  name: add image
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/projects/:id/images/"
+  params:
+    - name: id
+      value: "22"
+      type: path
+  body:
+    type: multipart-form
+    data:
+      - name: image
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/6-Dandadan-manga-ch-16.webp
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
