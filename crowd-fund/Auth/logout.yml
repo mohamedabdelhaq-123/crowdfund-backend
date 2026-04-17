@@ -1,15 +1,11 @@
 info:
-  name: Replace Project
+  name: logout
   type: http
   seq: 4
 
 http:
-  method: PUT
-  url: "{{baseUrl}}/projects/:id/"
-  params:
-    - name: id
-      value: "1"
-      type: path
+  method: POST
+  url: "{{baseUrl}}/auth/logout/"
   auth: inherit
 
 settings:

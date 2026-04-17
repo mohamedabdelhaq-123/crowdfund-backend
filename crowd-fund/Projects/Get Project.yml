@@ -1,14 +1,14 @@
 info:
-  name: Update Project
+  name: Get Project
   type: http
-  seq: 5
+  seq: 2
 
 http:
-  method: PATCH
+  method: GET
   url: "{{baseUrl}}/projects/:id/"
   params:
     - name: id
-      value: "1"
+      value: "8"
       type: path
   auth: inherit
 

@@ -5,8 +5,10 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/api/projects/2/comments/"
-  auth: inherit
+  url: "{{baseUrl}}/projects/1/comments/"
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2MzA0MzcyLCJpYXQiOjE3NzYzMDM0NzIsImp0aSI6IjNkOGYxY2M5ZTMxOTQwNTA5N2JhNjAwYjU0NTQzNTg5IiwidXNlcl9pZCI6IjEwIn0.6P-6KQ44FxXVY83U96sXH_TlNIbnB4ZeDXL81WdACN0
 
 settings:
   encodeUrl: true

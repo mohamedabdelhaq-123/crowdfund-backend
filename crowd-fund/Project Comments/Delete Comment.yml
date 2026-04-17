@@ -1,15 +1,11 @@
 info:
-  name: Update Project
+  name: Delete Comment
   type: http
-  seq: 5
+  seq: 4
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/projects/:id/"
-  params:
-    - name: id
-      value: "1"
-      type: path
+  url: "{{baseUrl}}/projects/comments/1/"
   auth: inherit
 
 settings:

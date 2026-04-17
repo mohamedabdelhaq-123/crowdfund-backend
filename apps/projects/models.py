@@ -1,5 +1,4 @@
 from xml.parsers.expat import model
-
 from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -31,6 +30,7 @@ class Project(models.Model):
     target = models.FloatField()
     current_money = models.FloatField(default=0, blank=True)
     is_featured = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='project/',blank=True, null=True)
     avg_rate = models.FloatField(default=0, blank=True)
 
     class Status(models.TextChoices):

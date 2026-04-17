@@ -1,0 +1,21 @@
+info:
+  name: Rate Project
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/projects/1/rate/"
+  body:
+    type: json
+    data: |-
+      {
+      "stars": 5
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

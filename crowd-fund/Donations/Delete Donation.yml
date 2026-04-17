@@ -1,16 +1,18 @@
 info:
-  name: Update Project
+  name: Delete Donation
   type: http
-  seq: 5
+  seq: 6
 
 http:
-  method: PATCH
-  url: "{{baseUrl}}/projects/:id/"
+  method: DELETE
+  url: "{{baseUrl}}/donations/:id/"
   params:
     - name: id
-      value: "1"
+      value: "2"
       type: path
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true

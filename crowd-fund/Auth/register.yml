@@ -1,0 +1,35 @@
+info:
+  name: register
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/auth/register/"
+  body:
+    type: json
+    data: |-
+      // {
+      //     "first_name": "Mohamed",
+      //     "last_name": "Sameh",
+      //     "email": "mohamed.kholy2011@hotmail.com",
+      //     "password": "12345678",
+      //     "confirm_password": "12345678",
+      //     "mobile_number": "01020345672"
+      // }
+
+      {
+          "first_name": "Andrew",
+          "last_name": "Morris",
+          "email": "tandrew14emad14@gmail.com",
+          "password": "12345678",
+          "confirm_password": "12345678",
+          "mobile_number": "01210234363"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

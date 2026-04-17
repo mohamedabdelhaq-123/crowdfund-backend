@@ -1,0 +1,25 @@
+info:
+  name: Create Donation
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/donations/"
+  body:
+    type: json
+    data: |-
+      {
+        "amount":400,
+        "project":8,
+        "user":1
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

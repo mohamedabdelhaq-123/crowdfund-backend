@@ -1,0 +1,21 @@
+info:
+  name: Update Comment
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/projects/comments/1/"
+  body:
+    type: json
+    data: |-
+      {
+      "content": "This project looks good"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

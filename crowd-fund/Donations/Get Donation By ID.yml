@@ -1,16 +1,18 @@
 info:
-  name: Update Project
+  name: Get Donation By ID
   type: http
-  seq: 5
+  seq: 2
 
 http:
-  method: PATCH
-  url: "{{baseUrl}}/projects/:id/"
+  method: GET
+  url: "{{baseUrl}}/donations/:id/"
   params:
     - name: id
       value: "1"
       type: path
-  auth: inherit
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true
