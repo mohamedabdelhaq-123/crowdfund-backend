@@ -15,12 +15,15 @@ from urllib.parse import unquote
 from .serializers import RegisterSerializer, LoginSerializer
 from .utils import send_activation_email
 from .models import User
+from rest_framework.parsers import MultiPartParser, FormParser
+
 
 
 class RegisterView(APIView):      # POST /auth/register/ — validates input, creates user, sends activation email
     permission_classes = [AllowAny]
     authentication_classes = []
-
+    parser_classes = (MultiPartParser, FormParser)
+    
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if not serializer.is_valid():

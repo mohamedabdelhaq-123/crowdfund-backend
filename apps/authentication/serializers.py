@@ -2,11 +2,13 @@ from rest_framework import serializers
 from .models import User
 from django.contrib.auth import authenticate
 from django.utils import timezone
+import cloudinary
 
 # Request → Serializer(data) → is_valid() triggers: field validators → validate() → model validators → save() triggers create() → Response
 
 class RegisterSerializer(serializers.ModelSerializer):     # validates registration input
 
+    uploaded_image_url = serializers.SerializerMethodField()
     confirm_password = serializers.CharField(write_only=True, required=True) #explicity field that will exist in the json
 
     class Meta:
@@ -22,10 +24,11 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
             'birthdate',
             'fb_profile',
             'country',
+            "uploaded_image_url",
         ]
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 8},
-            'profile_pic': {'required': False},
+            'profile_pic': {'required': False, 'write_only': True},
             'birthdate': {'required': False},
             'fb_profile': {'required': False},
             'country': {'required': False},
@@ -47,6 +50,17 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
         if value and value > timezone.now().date():
             raise serializers.ValidationError("Birthdate cannot be in the future.")
         return value
+    
+    def get_uploaded_image_url(self, obj):
+        return cloudinary.CloudinaryImage(obj.profile_pic.name).build_url(
+            width=300, 
+            height=300, 
+            crop="fill",    
+            quality="auto",  
+            fetch_format="auto", 
+            secure=True
+        )
+  
 
     def create(self, validated_data):            # remove confirm_password and use create_user() to hash the password
         validated_data.pop('confirm_password')

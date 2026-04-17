@@ -56,8 +56,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     
 
-    profile_pic = models.URLField(null=True, blank=True) 
-    profile_pic_public_id = models.CharField(max_length=255, null=True, blank=True)
+    profile_pic =  models.ImageField(upload_to='project/',blank=True, null=True)
+    # profile_pic_public_id = models.CharField(max_length=255, null=True, blank=True)
    
     mobile_number = models.CharField(validators=[egyptian_phone_regex], max_length=11, unique=True) # need validator
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
