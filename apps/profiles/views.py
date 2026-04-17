@@ -8,6 +8,8 @@ from .serializers import ProfileSerializer, DeleteAccountSerializer
 from apps.authentication.models import User
 from apps.projects.models import Project
 from apps.projects.serializers import ProjectSerializer
+from apps.donations.models import Donation
+from apps.donations.serializers import DonationSerializer
 
 
 class ProfileView(APIView):
@@ -64,4 +66,13 @@ class MyProjectsView(APIView):
     def get(self, request):
         projects = Project.objects.filter(user=request.user)
         serializer = ProjectSerializer(projects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class MyDonationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        donations = Donation.objects.filter(user=request.user)
+        serializer = DonationSerializer(donations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
