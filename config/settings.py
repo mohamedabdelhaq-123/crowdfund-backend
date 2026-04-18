@@ -57,7 +57,7 @@ INSTALLED_APPS = [ # local apps , then 3rd party, then django default
     #cloudinary
     'cloudinary_storage',
     'cloudinary',
-
+    'django_filters',
 ]
 
 MIDDLEWARE = [
