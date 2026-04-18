@@ -1,5 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.conf import settings
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 
 # custom auth class that reads the JWT access token from an httpOnly cookies instead of the Authorization header
@@ -14,6 +15,12 @@ class CookieJWTAuthentication(JWTAuthentication):
             raw_token = self.get_raw_token(header)
             if raw_token is None:
                 return None
+            
+        try:
+            validated_token = self.get_validated_token(raw_token)
+        except (InvalidToken, TokenError):
+            return None  # if token expired or invalid so let the view decide what to do
+
 
         validated_token = self.get_validated_token(raw_token)
         return self.get_user(validated_token), validated_token

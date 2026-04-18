@@ -187,6 +187,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'apps.authentication.authentication.CookieJWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES':(
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
@@ -195,7 +198,7 @@ IS_PRODUCTION = not DEBUG
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),      # short-lived so stolen tokens expire fast
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),      # short-lived so stolen tokens expire fast
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,      # issue new refresh token on each use
     'BLACKLIST_AFTER_ROTATION': True,      # old refresh tokens auto-blacklisted
