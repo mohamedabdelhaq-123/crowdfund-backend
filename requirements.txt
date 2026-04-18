@@ -12,6 +12,7 @@ python-decouple==3.8
 sqlparse==0.5.5
 typing_extensions==4.15.0
 django-extensions==4.1
+django-filter==24.3
 django-anymail==14.0
 pillow==12.2.0
 certifi==2026.2.25

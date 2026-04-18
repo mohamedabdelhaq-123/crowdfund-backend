@@ -128,11 +128,14 @@ class HomepageView(APIView):
         )
 
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 class ProjectSearchView(generics.ListAPIView):
     serializer_class = ProjectSerializer
     permission_classes = [AllowAny]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["title", "details", "category__name", "tags__name"]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ["title", "details", "category__name", "tags__name", "user__first_name", "user__last_name"]
+    filterset_fields = ["category"]
 
     def get_queryset(self):
         return Project.objects.filter(status="pending").annotate(
