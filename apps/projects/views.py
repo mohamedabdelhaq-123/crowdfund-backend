@@ -40,8 +40,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
     def get_object(self):
         obj = super().get_object()
-        if obj.user != self.request.user:
-            raise PermissionDenied("You do not have permission to edit this project.")
+        if(self.action not in ['retrieve']):
+            if obj.user != self.request.user:
+                raise PermissionDenied("You do not have permission to edit this project.")
         return obj
 
     def perform_update(self, serializer):
