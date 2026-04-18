@@ -5,7 +5,11 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/projects/8/rate/"
+  url: "{{baseUrl}}/projects/:id/rate/"
+  params:
+    - name: id
+      value: "22"
+      type: path
   body:
     type: json
     data: |-

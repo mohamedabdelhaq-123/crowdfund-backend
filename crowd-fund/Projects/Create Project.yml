@@ -11,7 +11,7 @@ http:
     data:
       - name: title
         type: text
-        value: fund me
+        value: my pro max
       - name: start_date
         type: text
         value: 2026-05-01
@@ -54,11 +54,17 @@ http:
         value: "1"
         disabled: true
       - name: images
-        type: text
-        value: ""
-  auth:
-    type: bearer
-    token: "{{token}}"
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/fraymakers-hat-kid.gif
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/my-job-here-is-done-bye.gif
+      - name: images
+        type: file
+        value:
+          - /Users/andrewemad/Downloads/1.jpg
 
 settings:
   encodeUrl: true

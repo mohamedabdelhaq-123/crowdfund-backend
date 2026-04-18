@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/projects/:id/"
   params:
     - name: id
-      value: "22"
+      value: "9"
       type: path
   body:
     type: multipart-form
