@@ -180,3 +180,39 @@ class MeView(APIView):      # GET /auth/me/ — returns current user's data (req
     def get(self, request):
         serializer = MeSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+class CookieTokenRefreshView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
+
+        if not refresh_token:
+            return Response(
+                {'error': 'No refresh token found.'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+        except TokenError:
+            return Response(
+                {'error': 'Refresh token is invalid or expired.'},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        response = Response({'message': 'Token refreshed.'}, status=status.HTTP_200_OK)
+        response.set_cookie(
+            key=settings.SIMPLE_JWT['AUTH_COOKIE'],
+            value=access_token,
+            httponly=settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
+            secure=settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
+            samesite=settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
+            path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'],
+        )
+        return response
