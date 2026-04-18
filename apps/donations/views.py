@@ -35,6 +35,9 @@ class DonationCreateRetrieve(APIView):
       
           serializer = DonationSerializer(data=request.data)
           serializer.is_valid(raise_exception=True)
+          amount = serializer.validated_data.get('amount', 0.0)
+          if(amount > project.target - project.current_money):
+            return Response({"msg":f"Donation amount exceeds the remaining target. You can donate up to {project.target - project.current_money}"},status=status.HTTP_400_BAD_REQUEST)
           project.current_money += serializer.validated_data.get('amount',0.0)
           if (project.current_money >= project.target):
             project.status = "finished"
