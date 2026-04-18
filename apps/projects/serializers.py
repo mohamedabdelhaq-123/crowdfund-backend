@@ -40,6 +40,8 @@ class ProjectSerializer(serializers.ModelSerializer):
   user_fullname = serializers.SerializerMethodField()
   is_reported_by_me = serializers.SerializerMethodField(read_only=True)
   avg_rate=serializers.FloatField(read_only=True)
+  calculate_average_rating = serializers.SerializerMethodField()
+  uploaded_image_url = serializers.SerializerMethodField()
   tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True,validators=[validate_max_tags])
   images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False),
                                   write_only=True,required=False,validators=[validate_max_images])
@@ -57,7 +59,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         "start_date", "end_date", "created_at",
         "details", "target", "current_money","images",'images_urls',
         "is_reported_by_me", "category", "category_name", "user", "user_fullname",
-        "tags", "tags_names", "avg_rate",
+        "tags", "tags_names", "avg_rate", "calculate_average_rating", "uploaded_image_url",
     ]
     extra_kwargs = {         
             "category": {"write_only": True},
@@ -130,6 +132,16 @@ class ProjectSerializer(serializers.ModelSerializer):
     if not request or not request.user or not request.user.is_authenticated:
       return False
     return ProjectReport.objects.filter(project_id=obj.id, user_id=request.user.id).exists()
+
+  def get_calculate_average_rating(self, obj):
+    return getattr(obj, 'avg_rate', 0.0)
+
+  def get_uploaded_image_url(self, obj):
+    # Try to get the first image from the set
+    image = obj.image_set.first()
+    if image and image.path:
+        return image.path.url
+    return None
   
   # def get_uploaded_image_url(self, obj):
   #  return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 

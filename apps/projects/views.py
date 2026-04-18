@@ -15,11 +15,13 @@ from .serializers import CategorySerializer, CommentSerializer, ProjectRatingSer
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -97,15 +99,21 @@ class ProjectImageDetailView(APIView):
 
     
 class HomepageView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
-        latest_projects = Project.objects.order_by("-created_at")[:5]
+        # Base queryset with rating annotation and performance optimizations
+        base_queryset = Project.objects.annotate(
+            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+        ).select_related('user').prefetch_related('image_set')
 
-        featured_projects = Project.objects.filter(is_featured=True)[:5]
+        latest_projects = base_queryset.order_by("-created_at")[:5]
+        featured_projects = base_queryset.filter(is_featured=True)[:5]
 
+        # Filter only projects that have at least one rating for the "Top Rated" section
         top_rated_projects = (
-            Project.objects.annotate(avg_rating=Avg("ratings__stars"))
-            .filter(avg_rating__isnull=False)
-            .order_by("-avg_rating", "-created_at")[:5]
+            base_queryset.filter(ratings__isnull=False)
+            .distinct()
+            .order_by("-avg_rate", "-created_at")[:5]
         )
 
         categories = Category.objects.all()
@@ -121,11 +129,15 @@ class HomepageView(APIView):
 
 
 class ProjectSearchView(generics.ListAPIView):
-    queryset = Project.objects.filter(status="pending")
     serializer_class = ProjectSerializer
     permission_classes = [AllowAny]
     filter_backends = [filters.SearchFilter]
     search_fields = ["title", "details", "category__name", "tags__name"]
+
+    def get_queryset(self):
+        return Project.objects.filter(status="pending").annotate(
+            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+        ).select_related('user').prefetch_related('image_set')
 
 
 class SimilarProjectsView(generics.ListAPIView):
@@ -140,6 +152,9 @@ class SimilarProjectsView(generics.ListAPIView):
                 Project.objects.filter(
                     tags__in=current_project.tags.all(), status="pending"
                 )
+                .annotate(avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0)))
+                .select_related('user')
+                .prefetch_related('image_set')
                 .exclude(id=project_id)
                 .distinct()[:4]
             )
