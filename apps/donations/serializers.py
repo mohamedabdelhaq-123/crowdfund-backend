@@ -9,7 +9,7 @@ class DonationSerializer(serializers.ModelSerializer):
   class Meta:
     model = Donation
     fields = ["id","amount","project","user","user_fullname","project_name","created_at"]
-  
+    read_only_fields = ["user", "project"]  
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
