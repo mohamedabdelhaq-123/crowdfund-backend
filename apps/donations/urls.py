@@ -1,10 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import DonationViewSet
+from .views import DonationCreateRetrieve,DonationList
 
 
-router = DefaultRouter()
-router.register(r"", DonationViewSet)
+
+
 urlpatterns = [
-    path("", include(router.urls)),
+    path("",DonationList.as_view(),name="user-donations"),
+    path("<int:project_id>/",DonationCreateRetrieve.as_view(),name="user-project-donations")
 ]

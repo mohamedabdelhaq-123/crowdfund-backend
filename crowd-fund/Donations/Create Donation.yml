@@ -5,14 +5,17 @@ info:
 
 http:
   method: POST
-  url: "{{baseUrl}}/donations/"
+  url: "{{baseUrl}}/donations/:id/"
+  params:
+    - name: id
+      value: "39"
+      type: path
   body:
     type: json
     data: |-
       {
-        "amount":400,
-        "project":8,
-        "user":1
+        "amount":1000000
+       
       }
   auth:
     type: bearer

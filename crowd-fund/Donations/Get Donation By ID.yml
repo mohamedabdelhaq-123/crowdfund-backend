@@ -8,7 +8,7 @@ http:
   url: "{{baseUrl}}/donations/:id/"
   params:
     - name: id
-      value: "1"
+      value: "39"
       type: path
   auth:
     type: bearer
