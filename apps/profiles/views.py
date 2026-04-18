@@ -39,11 +39,19 @@ class ProfileView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user.delete()
-        return Response(
-            {'detail': 'account deleted successfully'},
-            status=status.HTTP_204_NO_CONTENT,
-        )
+        from django.db.models import ProtectedError
+
+        try:
+            user.delete()
+            return Response(
+                {'detail': 'account deleted successfully'},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+        except ProtectedError:
+            return Response(
+                {'detail': 'Cannot delete account because you have active projects or donations. Please delete them first.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class PublicProfileView(APIView):
@@ -59,6 +67,17 @@ class PublicProfileView(APIView):
             )
 
         serializer = ProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class PublicProjectsView(APIView):
+    permission_classes = []
+
+    def get(self, request, id):
+        projects = Project.objects.filter(user_id=id, status='pending').annotate(
+            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+        ).select_related('user').prefetch_related('tags', 'image_set')
+        serializer = ProjectSerializer(projects, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
