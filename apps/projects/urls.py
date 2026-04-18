@@ -21,9 +21,9 @@ router.register(r"categories", CategoryViewSet)
 router.register(r"tags",TagViewSet)
 router.register(r"",ProjectViewSet,basename='project')
 urlpatterns = [
-    path("", include(router.urls)),
     path("home/", HomepageView.as_view(), name="homepage"),
     path("search/", ProjectSearchView.as_view(), name="project-search"),
+    path("", include(router.urls)),
     path("<int:pk>/similar/", SimilarProjectsView.as_view(), name="similar-projects"),
     path("<int:pk>/rate/", ProjectRatingCreateView.as_view(), name="project-rate"),
     path("<int:pk>/report/", ProjectReportCreateView.as_view(), name="project-report"),
