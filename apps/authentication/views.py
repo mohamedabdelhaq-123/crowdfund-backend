@@ -120,7 +120,7 @@ class LoginView(APIView):      # POST /auth/login/ — validates credentials and
         return response
 
 
-class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh token and clears cookies
+class LogoutView(APIView):      # POST /auth/logout/=>blacklists refresh token and clears cookies
     # permission_classes = [IsAuthenticated]
     permission_classes = []
     authentication_classes = []
@@ -128,14 +128,12 @@ class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh toke
     def post(self, request):
         refresh_token = request.COOKIES.get(settings.SIMPLE_JWT['AUTH_COOKIE_REFRESH'])
 
-        if not refresh_token:
-            return Response({'error': 'No refresh token found.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            token = RefreshToken(refresh_token)
-            token.blacklist()      # add to blacklist DB table so it can't be reused
-        except TokenError:
-            pass      # token already expired or invalid, still clear cookies
+        if refresh_token:
+            try:
+                token = RefreshToken(refresh_token)
+                token.blacklist()      # add to blacklist DB table so it can't be reused
+            except TokenError:
+                pass      # token already expired or invalid, still clear cookies
 
         response = Response({'message': 'Logout successful.'}, status=status.HTTP_200_OK)
         response.delete_cookie(settings.SIMPLE_JWT['AUTH_COOKIE'], path=settings.SIMPLE_JWT['AUTH_COOKIE_PATH'])
@@ -143,7 +141,7 @@ class LogoutView(APIView):      # POST /auth/logout/ — blacklists refresh toke
         return response
 
 
-class ResendActivationView(APIView):      # POST /auth/resend-activation/ — sends new activation email with cooldown
+class ResendActivationView(APIView):      # POST /auth/resend-activation/ =>sends new activation email with cooldown
     permission_classes = [AllowAny]
     authentication_classes = []
 
@@ -174,7 +172,7 @@ class ResendActivationView(APIView):      # POST /auth/resend-activation/ — se
         return Response(generic_msg, status=status.HTTP_200_OK)
 
 
-class MeView(APIView):      # GET /auth/me/ — returns current user's data (requires valid cookie)
+class MeView(APIView):      # GET /auth/me/  returns current user's data (requires valid cookie)
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
