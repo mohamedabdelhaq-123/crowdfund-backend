@@ -64,7 +64,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     ]
     extra_kwargs = {         
             "category": {"write_only": True},
-            "user": {"write_only": True},
+            "user": {"read_only": True},
             "created_at": {"read_only": True},
       }
 
