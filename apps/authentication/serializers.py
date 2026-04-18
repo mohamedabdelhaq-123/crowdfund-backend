@@ -41,10 +41,7 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
             )
         return attrs
      
-    def create(self, validated_data):    # remove confirm_password and use create_user() to hash the password
-        validated_data.pop('confirm_password') #after validation remove the confirm field
-        return User.objects.create_user(**validated_data) #create user by the key values
-    
+
 
     def validate_birthdate(self, value):
         if value and value > timezone.now().date():
@@ -52,6 +49,8 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
         return value
     
     def get_uploaded_image_url(self, obj):
+        if not obj.profile_pic:
+            return None
         return cloudinary.CloudinaryImage(obj.profile_pic.name).build_url(
             width=300, 
             height=300, 
@@ -60,11 +59,12 @@ class RegisterSerializer(serializers.ModelSerializer):     # validates registrat
             fetch_format="auto", 
             secure=True
         )
+    
+    def create(self, validated_data):    # remove confirm_password and use create_user() to hash the password
+        validated_data.pop('confirm_password') #after validation remove the confirm field
+        return User.objects.create_user(**validated_data) #create user by the key values
+    
   
-
-    def create(self, validated_data):            # remove confirm_password and use create_user() to hash the password
-        validated_data.pop('confirm_password')
-        return User.objects.create_user(**validated_data)
 
 
 class LoginSerializer(serializers.Serializer):      # validates login credentials and activation status

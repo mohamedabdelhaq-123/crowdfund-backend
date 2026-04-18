@@ -17,7 +17,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 60m
           script: |
             set -e
             cd "${{ secrets.EC2_PROJECT_PATH }}"
@@ -26,10 +25,7 @@ jobs:
             lock_file="/tmp/crowdfund-deploy.lock"
             if command -v flock >/dev/null 2>&1; then
               exec 9>"${lock_file}"
-              if ! flock -w 900 -x 9; then
-                echo "Timed out waiting for deploy lock after 15 minutes"
-                exit 1
-              fi
+              flock -x 9
             fi
 
             git -C crowdfund-backend fetch origin dev
