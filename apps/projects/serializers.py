@@ -40,9 +40,9 @@ class ProjectSerializer(serializers.ModelSerializer):
   user_fullname = serializers.SerializerMethodField()
   is_reported_by_me = serializers.SerializerMethodField(read_only=True)
   avg_rate=serializers.FloatField(read_only=True)
-  tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True)
-  images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False,validators=[validate_max_tags]),
-                                  ,write_only=True,required=False,validators=[validate_max_images])
+  tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True,validators=[validate_max_tags])
+  images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False),
+                                  write_only=True,required=False,validators=[validate_max_images])
   tags_names = serializers.SlugRelatedField(
     many=True, 
     read_only=True, 
