@@ -38,6 +38,7 @@ class ImageSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
   category_name = serializers.ReadOnlyField(source="category.name")
   user_fullname = serializers.SerializerMethodField()
+  user_profile_pic = serializers.SerializerMethodField()
   is_reported_by_me = serializers.SerializerMethodField(read_only=True)
   avg_rate=serializers.FloatField(read_only=True)
   calculate_average_rating = serializers.SerializerMethodField()
@@ -58,7 +59,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         "id", "title", "status", "is_featured",
         "start_date", "end_date", "created_at",
         "details", "target", "current_money","images",'images_urls',
-        "is_reported_by_me", "category", "category_name", "user", "user_fullname",
+        "is_reported_by_me", "category", "category_name", "user", "user_fullname", "user_profile_pic",
         "tags", "tags_names", "avg_rate", "calculate_average_rating", "uploaded_image_url",
     ]
     extra_kwargs = {         
@@ -127,6 +128,12 @@ class ProjectSerializer(serializers.ModelSerializer):
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
 
+  def get_user_profile_pic(self, obj):
+    if hasattr(obj.user, 'profile_pic') and obj.user.profile_pic:
+      # If requested URL is needed, build it:
+      return obj.user.profile_pic.url
+    return None
+
   def get_is_reported_by_me(self, obj):
     request = self.context.get("request")
     if not request or not request.user or not request.user.is_authenticated:
@@ -160,12 +167,13 @@ class ProjectRatingSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
   user_fullname = serializers.SerializerMethodField(read_only=True) # calls the get_user_fullname method using
+  user_profile_pic = serializers.SerializerMethodField(read_only=True)
   is_reported_by_me = serializers.SerializerMethodField(read_only=True)
 
   class Meta:
     model = Comment
-    fields = ["id", "project", "user", "user_fullname", "parent", "content", "is_reported_by_me", "created_at"]
-    read_only_fields = ["id", "project", "user", "created_at", "user_fullname", "is_reported_by_me"]
+    fields = ["id", "project", "user", "user_fullname", "user_profile_pic", "parent", "content", "is_reported_by_me", "created_at"]
+    read_only_fields = ["id", "project", "user", "created_at", "user_fullname", "user_profile_pic", "is_reported_by_me"]
 
   def validate_parent(self, parent):
     # If no parent is given, this is a top-level comment
@@ -193,6 +201,11 @@ class CommentSerializer(serializers.ModelSerializer):
 
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
+
+  def get_user_profile_pic(self, obj):
+    if hasattr(obj.user, 'profile_pic') and obj.user.profile_pic:
+      return obj.user.profile_pic.url
+    return None
 
   def get_is_reported_by_me(self, obj):
     request = self.context.get("request")
