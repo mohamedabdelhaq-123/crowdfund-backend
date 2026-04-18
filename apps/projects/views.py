@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import generics, filters, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.db.models import Avg,Value
 from django.db.models.functions import Coalesce
@@ -25,9 +26,47 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     parser_classes = (MultiPartParser, FormParser)
     def get_queryset(self):
-        return Project.objects.all().annotate(
-            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
-        ).select_related('user').prefetch_related('tags','image_set')
+        queryset = Project.objects.all()
+        if self.action in ['list', 'retrieve']:
+            return queryset.annotate(
+                avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+            ).select_related('user').prefetch_related('tags', 'image_set')
+        return queryset
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [AllowAny]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+    def get_object(self):
+        obj = super().get_object()
+        if obj.user != self.request.user:
+            raise PermissionDenied("You do not have permission to edit this project.")
+        return obj
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        
+  
+        if (instance.current_money / instance.target) > 0.25:
+            raise PermissionDenied("You cant cancel a project that has reached more than 25% of th target")
+        if(instance.status != 'pending'):
+            raise PermissionDenied(f"You cant cancel this project because it is {instance.status}")
+
+        instance.status = 'canceled'
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response({"detail": serializer.data}, status=200)
+
+
+        
+    
+
 
 class ProjectImageListView(generics.ListCreateAPIView):
     serializer_class = ImageSerializer

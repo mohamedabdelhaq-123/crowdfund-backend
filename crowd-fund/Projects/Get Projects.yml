@@ -6,7 +6,6 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/projects/"
-  auth: inherit
 
 settings:
   encodeUrl: true

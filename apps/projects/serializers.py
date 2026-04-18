@@ -2,6 +2,19 @@ from rest_framework import serializers
 from django.db.models import Avg
 import cloudinary
 from .models import Category, Comment, CommentReport, Project, ProjectRating, ProjectReport, Tag, Image
+from rest_framework.exceptions import ValidationError
+def validate_max_images(value):
+    # 'value' here is the list of items sent by the user
+    MAX_COUNT = 4
+    if len(value) > MAX_COUNT:
+        raise ValidationError(f"You cannot add more than {MAX_COUNT} images.")
+
+def validate_max_tags(value):
+    # 'value' here is the list of items sent by the user
+    MAX_COUNT = 10
+    if len(value) > MAX_COUNT:
+        raise ValidationError(f"You cannot add more than {MAX_COUNT} tags.")
+
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,8 +41,8 @@ class ProjectSerializer(serializers.ModelSerializer):
   is_reported_by_me = serializers.SerializerMethodField(read_only=True)
   avg_rate=serializers.FloatField(read_only=True)
   tags = serializers.ListField(child=serializers.CharField(max_length=255),required=False,write_only=True)
-  images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False)
-                                  ,write_only=True,required=False)
+  images  = serializers.ListField(child=serializers.ImageField(max_length=10000,allow_empty_file=False,use_url=False,validators=[validate_max_tags]),
+                                  ,write_only=True,required=False,validators=[validate_max_images])
   tags_names = serializers.SlugRelatedField(
     many=True, 
     read_only=True, 
@@ -94,7 +107,6 @@ class ProjectSerializer(serializers.ModelSerializer):
     for key,data in validated_data.items():
       setattr(instance, key, data)
     instance.save()
-   
 
     if tags_data:
         tag_instances = [Tag.objects.get_or_create(name=tag)[0] for tag in tags_data]
@@ -113,16 +125,14 @@ class ProjectSerializer(serializers.ModelSerializer):
   def get_user_fullname(self, obj):
     return f"{obj.user.first_name} {obj.user.last_name}"
 
- 
-
-  def get_uploaded_image_url(self, obj):
-    return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 
-
   def get_is_reported_by_me(self, obj):
     request = self.context.get("request")
     if not request or not request.user or not request.user.is_authenticated:
       return False
     return ProjectReport.objects.filter(project_id=obj.id, user_id=request.user.id).exists()
+  
+  # def get_uploaded_image_url(self, obj):
+  #  return cloudinary.CloudinaryImage(obj.image.name).build_url(secure=True) 
   
 
 

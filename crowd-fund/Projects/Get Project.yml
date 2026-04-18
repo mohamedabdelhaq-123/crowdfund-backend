@@ -8,9 +8,8 @@ http:
   url: "{{baseUrl}}/projects/:id/"
   params:
     - name: id
-      value: "8"
+      value: "36"
       type: path
-  auth: inherit
 
 settings:
   encodeUrl: true
