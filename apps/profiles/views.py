@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.db.models import Avg, Value
+from django.db.models.functions import Coalesce
 
 from .serializers import ProfileSerializer, DeleteAccountSerializer
 from apps.authentication.models import User
@@ -64,8 +66,10 @@ class MyProjectsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        projects = Project.objects.filter(user=request.user)
-        serializer = ProjectSerializer(projects, many=True)
+        projects = Project.objects.filter(user=request.user).annotate(
+            avg_rate=Coalesce(Avg('ratings__stars'), Value(0.0))
+        ).select_related('user').prefetch_related('tags', 'image_set')
+        serializer = ProjectSerializer(projects, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
