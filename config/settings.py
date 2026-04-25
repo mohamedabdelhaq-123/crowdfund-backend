@@ -11,8 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-import os
-from django.conf import settings
 from decouple import config,Csv
 from datetime import timedelta
 
@@ -71,8 +69,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware', # to be commented
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = config('FRONTEND_URL', default='', cast=Csv())
 
 
 ROOT_URLCONF = 'config.urls'
@@ -165,22 +161,13 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='mohamed.kholy2011@gmail.com')
 
 
+# Frontend URL — used to build activation links sent in emails
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 
 CORS_ALLOW_CREDENTIALS = True      # required for cookies to be sent cross-origin with React
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://crowdfund.duckdns.org',
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    'https://crowdfund.duckdns.org',
-]
-
-# Frontend URL — used to build activation links sent in emails
-FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default=FRONTEND_URL, cast=Csv())
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default=FRONTEND_URL, cast=Csv())
 
 
 REST_FRAMEWORK = {

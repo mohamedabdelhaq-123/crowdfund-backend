@@ -21,15 +21,15 @@ A production-ready REST API backend for a crowdfunding platform, built with Djan
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | Django 5.2 + Django REST Framework |
-| Auth | JWT via `djangorestframework-simplejwt` (httpOnly cookies) |
-| Database | PostgreSQL (Supabase-hosted) |
-| Media Storage | Cloudinary |
-| Email | Brevo (SMTP) |
-| Containerization | Docker |
-| CI/CD | GitHub Actions → AWS EC2 |
+| Layer            | Technology                                                 |
+| ---------------- | ---------------------------------------------------------- |
+| Framework        | Django 5.2 + Django REST Framework                         |
+| Auth             | JWT via `djangorestframework-simplejwt` (httpOnly cookies) |
+| Database         | PostgreSQL (Supabase-hosted)                               |
+| Media Storage    | Cloudinary                                                 |
+| Email            | Brevo (SMTP)                                               |
+| Containerization | Docker                                                     |
+| CI/CD            | GitHub Actions → AWS EC2                                   |
 
 ---
 
@@ -54,6 +54,7 @@ Authentication uses a **custom `CookieJWTAuthentication`** class that reads JWT 
 ## Features
 
 ### Authentication
+
 - User registration with **email activation** (signed token, 24-hour expiry)
 - **Resend activation** email with a 2-minute cooldown to prevent abuse
 - Login/logout with **httpOnly JWT cookies** (access + refresh tokens)
@@ -61,12 +62,14 @@ Authentication uses a **custom `CookieJWTAuthentication`** class that reads JWT 
 - Email enumeration protection on sensitive endpoints
 
 ### User Profiles
+
 - View and update your own profile (name, phone, birthdate, country, Facebook URL, avatar)
 - **Delete account** (requires password confirmation; blocked if active projects or donations exist)
 - Public profile view for any user by ID
 - View any user's public (pending) projects
 
 ### Projects
+
 - Full CRUD — only the project owner can edit or cancel
 - **Cancel protection**: cannot cancel a project that has received more than 25% of its funding target
 - Projects move through statuses: `pending` → `finished` / `canceled` / `banned`
@@ -81,12 +84,14 @@ Authentication uses a **custom `CookieJWTAuthentication`** class that reads JWT 
 - **Search** by title, details, category, tags, or creator name; filter by category
 
 ### Comments
+
 - Post top-level comments on any project
 - **Threaded replies** (one level deep — replies cannot be nested further)
 - Edit and delete your own comments
 - **Report/flag** a comment (toggle)
 
 ### Donations
+
 - Donate to any `pending` project
 - Automatically caps donations at the remaining target balance
 - Project status auto-transitions to `finished` when the target is reached
@@ -100,63 +105,63 @@ All endpoints are prefixed with `/api/`.
 
 ### Auth — `/api/auth/`
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| POST | `auth/register/` | Public | Register a new user |
-| GET | `auth/activate/<token>/` | Public | Activate account via email token |
-| POST | `auth/resend-activation/` | Public | Resend activation email |
-| POST | `auth/login/` | Public | Login, sets JWT cookies |
-| POST | `auth/logout/` | Public | Logout, clears cookies & blacklists refresh token |
-| GET | `auth/me/` | Required | Get current user's basic info |
-| POST | `auth/token/refresh/` | Public | Refresh access token from cookie |
+| Method | Endpoint                  | Auth     | Description                                       |
+| ------ | ------------------------- | -------- | ------------------------------------------------- |
+| POST   | `auth/register/`          | Public   | Register a new user                               |
+| GET    | `auth/activate/<token>/`  | Public   | Activate account via email token                  |
+| POST   | `auth/resend-activation/` | Public   | Resend activation email                           |
+| POST   | `auth/login/`             | Public   | Login, sets JWT cookies                           |
+| POST   | `auth/logout/`            | Public   | Logout, clears cookies & blacklists refresh token |
+| GET    | `auth/me/`                | Required | Get current user's basic info                     |
+| POST   | `auth/token/refresh/`     | Public   | Refresh access token from cookie                  |
 
 ### Profiles — `/api/users/`
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `users/me/` | Required | Get own profile |
-| PATCH | `users/me/` | Required | Update own profile |
-| DELETE | `users/me/` | Required | Delete own account |
-| GET | `users/<id>/` | Public | Get public profile |
-| GET | `users/me/projects/` | Required | Get own projects |
-| GET | `users/me/donations/` | Required | Get own donations |
-| GET | `users/<id>/projects/` | Public | Get a user's public projects |
+| Method | Endpoint               | Auth     | Description                  |
+| ------ | ---------------------- | -------- | ---------------------------- |
+| GET    | `users/me/`            | Required | Get own profile              |
+| PATCH  | `users/me/`            | Required | Update own profile           |
+| DELETE | `users/me/`            | Required | Delete own account           |
+| GET    | `users/<id>/`          | Public   | Get public profile           |
+| GET    | `users/me/projects/`   | Required | Get own projects             |
+| GET    | `users/me/donations/`  | Required | Get own donations            |
+| GET    | `users/<id>/projects/` | Public   | Get a user's public projects |
 
 ### Projects — `/api/projects/`
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `projects/` | Public | List all projects |
-| POST | `projects/` | Required | Create a project |
-| GET | `projects/<id>/` | Public | Get a project |
-| PUT | `projects/<id>/` | Owner | Replace a project |
-| PATCH | `projects/<id>/` | Owner | Partially update a project |
-| DELETE | `projects/<id>/` | Owner | Cancel a project |
-| GET | `projects/home/` | Public | Homepage feed (latest, featured, top-rated, categories) |
-| GET | `projects/search/` | Public | Search & filter projects |
-| GET | `projects/<id>/similar/` | Public | Get similar projects by tags |
-| POST | `projects/<id>/rate/` | Required | Rate a project (or update rating) |
-| POST | `projects/<id>/report/` | Required | Flag/unflag a project |
-| GET | `projects/categories/` | Public | List categories |
-| POST | `projects/categories/` | Required | Create a category |
-| GET | `projects/tags/` | Public | List tags |
-| POST | `projects/tags/` | Required | Create a tag |
-| GET | `projects/<id>/images/` | Public | List project images |
-| POST | `projects/<id>/images/` | Required | Add images to project |
-| DELETE | `projects/<id>/images/<img_id>/` | Required | Delete a specific image |
-| GET | `projects/<id>/comments/` | Public | List project comments |
-| POST | `projects/<id>/comments/` | Required | Post a comment |
-| PATCH | `comments/<id>/` | Owner | Edit own comment |
-| DELETE | `comments/<id>/` | Owner | Delete own comment |
-| POST | `comments/<id>/report/` | Required | Flag/unflag a comment |
+| Method | Endpoint                         | Auth     | Description                                             |
+| ------ | -------------------------------- | -------- | ------------------------------------------------------- |
+| GET    | `projects/`                      | Public   | List all projects                                       |
+| POST   | `projects/`                      | Required | Create a project                                        |
+| GET    | `projects/<id>/`                 | Public   | Get a project                                           |
+| PUT    | `projects/<id>/`                 | Owner    | Replace a project                                       |
+| PATCH  | `projects/<id>/`                 | Owner    | Partially update a project                              |
+| DELETE | `projects/<id>/`                 | Owner    | Cancel a project                                        |
+| GET    | `projects/home/`                 | Public   | Homepage feed (latest, featured, top-rated, categories) |
+| GET    | `projects/search/`               | Public   | Search & filter projects                                |
+| GET    | `projects/<id>/similar/`         | Public   | Get similar projects by tags                            |
+| POST   | `projects/<id>/rate/`            | Required | Rate a project (or update rating)                       |
+| POST   | `projects/<id>/report/`          | Required | Flag/unflag a project                                   |
+| GET    | `projects/categories/`           | Public   | List categories                                         |
+| POST   | `projects/categories/`           | Required | Create a category                                       |
+| GET    | `projects/tags/`                 | Public   | List tags                                               |
+| POST   | `projects/tags/`                 | Required | Create a tag                                            |
+| GET    | `projects/<id>/images/`          | Public   | List project images                                     |
+| POST   | `projects/<id>/images/`          | Required | Add images to project                                   |
+| DELETE | `projects/<id>/images/<img_id>/` | Required | Delete a specific image                                 |
+| GET    | `projects/<id>/comments/`        | Public   | List project comments                                   |
+| POST   | `projects/<id>/comments/`        | Required | Post a comment                                          |
+| PATCH  | `comments/<id>/`                 | Owner    | Edit own comment                                        |
+| DELETE | `comments/<id>/`                 | Owner    | Delete own comment                                      |
+| POST   | `comments/<id>/report/`          | Required | Flag/unflag a comment                                   |
 
 ### Donations — `/api/donations/`
 
-| Method | Endpoint | Auth | Description |
-|---|---|---|---|
-| GET | `donations/` | Required | List current user's donations |
-| GET | `donations/<project_id>/` | Required | Get user's donations for a project |
-| POST | `donations/<project_id>/` | Required | Donate to a project |
+| Method | Endpoint                  | Auth     | Description                        |
+| ------ | ------------------------- | -------- | ---------------------------------- |
+| GET    | `donations/`              | Required | List current user's donations      |
+| GET    | `donations/<project_id>/` | Required | Get user's donations for a project |
+| POST   | `donations/<project_id>/` | Required | Donate to a project                |
 
 ---
 
@@ -290,11 +295,50 @@ The project includes a `Dockerfile` for containerized deployment. It runs migrat
 # Build the image
 docker build -t crowdfund-backend .
 
-# Run the container (pass your .env file)
-docker run --env-file .env -p 8000:8000 crowdfund-backend
+# Run the container
+docker run -p 8000:8000 crowdfund-backend
 ```
 
-For multi-service orchestration (backend + frontend), a `docker-compose` setup is expected on the deployment server (referenced in the CI/CD workflow as project `crowdfund`).
+For multi-service orchestration (backend + frontend), keep `docker-compose.yml` in a separate infra/deployment repo (or directly on the server), since backend and frontend live in separate repositories.
+
+**Note:** Both `crowdfund-backend` and `crowdfund-frontend` repositories must exist in the same parent directory as the `docker-compose.yml` file for the build contexts (`./crowdfund-backend` and `./crowdfund-frontend`) to work correctly.
+
+Example shared `docker-compose.yml`:
+
+```yaml
+services:
+  backend:
+    build:
+      context: ./crowdfund-backend
+    container_name: crowdfund-backend
+    env_file:
+      - ./crowdfund-backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./crowdfund-backend:/app
+
+  frontend:
+    build:
+      context: ./crowdfund-frontend
+    container_name: crowdfund-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./crowdfund-frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+volumes:
+  frontend_node_modules:
+```
+
+Run from the directory that contains both repos and `docker-compose.yml`:
+
+```bash
+docker compose up -d --build
+```
 
 ---
 
@@ -305,6 +349,7 @@ Deployments to AWS EC2 are automated via **GitHub Actions** (`.github/workflows/
 **Trigger:** Any push to the `dev` branch, or a manual `workflow_dispatch`.
 
 **Pipeline steps:**
+
 1. SSH into the EC2 instance using stored secrets
 2. Pull the latest code from `origin/dev`
 3. Rebuild and restart only the `backend` Docker service (`docker compose up -d --build --no-deps backend`)
@@ -314,11 +359,11 @@ A file lock (`/tmp/crowdfund-deploy.lock`) serializes concurrent backend/fronten
 
 **Required GitHub Secrets:**
 
-| Secret | Description |
-|---|---|
-| `EC2_HOST` | Public IP or domain of the EC2 instance |
-| `EC2_USER` | SSH username (e.g., `ubuntu`) |
-| `EC2_SSH_KEY` | Private SSH key for authentication |
+| Secret             | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| `EC2_HOST`         | Public IP or domain of the EC2 instance         |
+| `EC2_USER`         | SSH username (e.g., `ubuntu`)                   |
+| `EC2_SSH_KEY`      | Private SSH key for authentication              |
 | `EC2_PROJECT_PATH` | Absolute path to the project root on the server |
 
 ---
@@ -352,8 +397,9 @@ crowdfund-backend/
 - JWT cookies are configured with `SameSite=None; Secure=True` in production and `SameSite=Lax` in development, compatible with a separate React frontend origin.
 
 ## Team Members
-  Rana Mohamed Abd Elhalim
-  Mohamed Khaled Hussein
-  Mohamed Sameh Mostafa Mohamed Elkholy
-  Mohamed Abdelhaq Mohamed
-  Andrew Emad Morris Philps
+
+Rana Mohamed Abd Elhalim
+Mohamed Khaled Hussein
+Mohamed Sameh Mostafa Mohamed Elkholy
+Mohamed Abdelhaq Mohamed
+Andrew Emad Morris Philps
