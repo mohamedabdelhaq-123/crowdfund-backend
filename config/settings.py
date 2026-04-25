@@ -141,6 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -193,7 +194,7 @@ SIMPLE_JWT = {
     'SIGNING_KEY': SECRET_KEY,
    'AUTH_COOKIE': 'access',
     'AUTH_COOKIE_REFRESH': 'refresh',
-    'AUTH_COOKIE_DOMAIN': '.duckdns.org' if IS_PRODUCTION else None,  # Allow subdomains
+    'AUTH_COOKIE_DOMAIN': config('AUTH_COOKIE_DOMAIN', default=None),
     'AUTH_COOKIE_SECURE': IS_PRODUCTION,  # ← True for HTTPS
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',
