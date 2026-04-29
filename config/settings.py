@@ -141,6 +141,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -183,21 +184,20 @@ REST_FRAMEWORK = {
 
 IS_PRODUCTION = not DEBUG
 
-
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),      # short-lived so stolen tokens expire fast
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,      # issue new refresh token on each use
-    'BLACKLIST_AFTER_ROTATION': True,      # old refresh tokens auto-blacklisted
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
-   'AUTH_COOKIE': 'access',
+    'AUTH_COOKIE': 'access',
     'AUTH_COOKIE_REFRESH': 'refresh',
-    'AUTH_COOKIE_DOMAIN': '.duckdns.org' if IS_PRODUCTION else None,  # Allow subdomains
-    'AUTH_COOKIE_SECURE': IS_PRODUCTION,  # ← True for HTTPS
+    'AUTH_COOKIE_DOMAIN': None,  # ← Change to None
+    'AUTH_COOKIE_SECURE': IS_PRODUCTION,
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_PATH': '/',
-    'AUTH_COOKIE_SAMESITE': 'Lax' if not IS_PRODUCTION else 'None',  # None' for cross-origin
+    'AUTH_COOKIE_SAMESITE': 'None' if IS_PRODUCTION else 'Lax',
 }
 
 # Cloudinary configuration
