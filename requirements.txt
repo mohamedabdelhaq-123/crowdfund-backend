@@ -23,3 +23,4 @@ idna==3.11
 requests==2.33.1
 six==1.17.0
 urllib3==2.6.3
+gunicorn
